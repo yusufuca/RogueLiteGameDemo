@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    GameManager gm;
+    protected GameManager gm;
     protected CharacterController charController;
     protected Animator animator;
     protected Vector3 targetPos;

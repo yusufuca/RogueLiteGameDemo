@@ -184,7 +184,7 @@ MonoBehaviour:
   _SortingLayerID: 0
   _SortingOrder: 0
   m_hasFontAssetChanged: 0
-  m_renderer: {fileID: 0}
+  m_renderer: {fileID: 2269308119745367156}
   m_maskType: 0
 --- !u!114 &6361370617386578005
 MonoBehaviour:
@@ -210,6 +210,7 @@ GameObject:
   - component: {fileID: 2848996641834954421}
   - component: {fileID: 4890435664223172049}
   - component: {fileID: 4831481181662556875}
+  - component: {fileID: 5035587214794072068}
   m_Layer: 0
   m_Name: Goblin
   m_TagString: Untagged
@@ -275,7 +276,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e444d7c71f0944f4d848bf6cd8595de6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  detection: {fileID: 0}
   myData: {fileID: 11400000, guid: ba1bd06e45545134d9a4095c697cdb00, type: 2}
+  maxPatrolLength: 10
+  marker: {fileID: 417303180041795355, guid: 250165e5f88be224c9033a9daa26daa5, type: 3}
 --- !u!23 &4831481181662556875
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -325,6 +329,24 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5035587214794072068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7090646728192034634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ab157e5822c1b241b745519461ba7a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Detection
+  player: {fileID: 0}
+  visionDistance: 10
+  visionAngle: 45
+  maxRayCount: 5
+  isRayHitPlayer: 0
+  targetPos: {x: 0, y: 0, z: 0}
 --- !u!1001 &2024069514051772829
 PrefabInstance:
   m_ObjectHideFlags: 0

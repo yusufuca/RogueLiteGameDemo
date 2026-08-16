@@ -1,83 +1,99 @@
+using NUnit.Framework;
+using System.Collections.Generic;
 using Unity.Hierarchy;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+
 public class EnemyMovement : Movement
 {
+
     GameObject player;
+    public Detection detection;
     public NPC_Types myData;
-    public float visionDistance = 10;
-    public float visionAngle = 45f;
+    public float maxPatrolLength = 10f;
+    public GameObject marker;
+    bool isMarkerSpawned = false;
+    public List<GameObject> markers = new List<GameObject>();
     protected override void Start()
     {
         base.Start();
       
         Speed = myData.moveSpeed;
         player = GameObject.FindGameObjectWithTag("Player");
+        detection = GetComponent<Detection>();
+        targetPos = transform.position;
     }
     protected override void Update()
     {
         base.Update();
-       
+        PatrolAreaPrep();
     }
     protected override void MoveToPoisiton()
     {
-        if (player != null)
-        {
-            float distance = Vector3.Distance(transform.position, player.transform.position);
-            if (distance < visionDistance)
-            {
-                Vector3 directionToPlayer = (player.transform.position - transform.position).normalized;
-                float angle = Vector3.Angle(transform.forward, directionToPlayer);
-                if (angle < visionAngle)
-                {
-                    Debug.Log("I can see the player!");
-                    targetPos = player.transform.position;
-                }
-                else
-                {
-                    targetPos = transform.position;
-                }
 
-            }
-            else
-            {
-                targetPos = transform.position;
-            }
-            
+        detection.DetectPlayer();
+        if (detection.isRayHitPlayer)
+        {
+            targetPos = detection.targetPos;
         }
         else
         {
-            Debug.Log("Player Data is Null");
-            targetPos = transform.position;
+            EnemyPatrol();
         }
-
             base.MoveToPoisiton();
     }
 
-    public void PlayerAggro()
-    {
 
+    public void EnemyPatrol()
+    {
+        Vector3 currentPos = transform.position;
+        float distance = Vector3.Distance(targetPos, currentPos);
+
+        if (distance < 2f)
+        {
+            if (gm.patrolArea!= null)
+            {
+                float halfLength = gm.patrolAreaLength / 2f;
+                float halfDepth = gm.patrolAreaDepth / 2f;
+
+                targetPos.x = Random.Range(gm.patrolArea.position.x - halfLength, gm.patrolArea.position.x + halfLength);
+                targetPos.z = Random.Range(gm.patrolArea.position.z - halfDepth, gm.patrolArea.position.z + halfDepth);
+            }
+            else
+            {
+                targetPos.x = Random.Range(currentPos.x - maxPatrolLength, currentPos.x + maxPatrolLength);
+                targetPos.z = Random.Range(currentPos.z - maxPatrolLength, currentPos.z + maxPatrolLength);
+            }
+
+            GameObject newMarker = Instantiate(marker, targetPos, Quaternion.identity);
+            markers.Add(newMarker);
+        }
+
+        if (markers.Count > 3)
+        {
+            Destroy(markers[0]);
+            markers.RemoveAt(0);
+        }
     }
 
-    private void OnDrawGizmosSelected()
+    public void PatrolAreaPrep()
     {
-        // 3. We wrap the drawing code so it doesn't break the final game build
-#if UNITY_EDITOR
+        if (gm.patrolArea == null) return;
 
-        // Set the color to Red, with 20% opacity (0.2f) so we can see through it
-        Handles.color = new Color(1f, 0f, 0f, 0.2f);
+        float halfLength = gm.patrolAreaLength / 2f;
+        float halfDepth = gm.patrolAreaDepth / 2f;
+        Vector3 center = gm.patrolArea.position;
 
-        // Calculate where the left edge of our vision cone starts
-        Vector3 leftVisionEdge = Quaternion.Euler(0, -visionAngle, 0) * transform.forward;
+        Vector3 topLeft = new Vector3(center.x - halfLength, center.y, center.z + halfDepth);
+        Vector3 topRight = new Vector3(center.x + halfLength, center.y, center.z + halfDepth);
+        Vector3 bottomLeft = new Vector3(center.x - halfLength, center.y, center.z - halfDepth);
+        Vector3 bottomRight = new Vector3(center.x + halfLength, center.y, center.z - halfDepth);
 
-        // Draw a solid pie slice! 
-        // (Center point, up direction, starting edge, total angle, radius)
-        Handles.DrawSolidArc(transform.position, Vector3.up, leftVisionEdge, visionAngle * 2, visionDistance);
-
-#endif
+        Debug.DrawLine(topLeft, topRight, Color.blue, 0f, false);
+        Debug.DrawLine(topRight, bottomRight, Color.blue, 0f, false);
+        Debug.DrawLine(bottomRight, bottomLeft, Color.blue, 0f, false);
+        Debug.DrawLine(bottomLeft, topLeft, Color.blue, 0f, false);
     }
+
 
 
 

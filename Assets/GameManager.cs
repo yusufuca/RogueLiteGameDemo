@@ -5,6 +5,9 @@ public class GameManager : MonoBehaviour
     public static GameManager gm;
 
 
+    public Transform patrolArea;
+    public float patrolAreaLength = 10f;
+    public float patrolAreaDepth = 10f;
 
     public GameObject player;
     public GameObject goblin;

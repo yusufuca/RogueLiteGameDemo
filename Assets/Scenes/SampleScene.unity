@@ -163,6 +163,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43336886f6091f84286984e4f90c82cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  patrolArea: {fileID: 534165997}
+  patrolAreaLength: 10
+  patrolAreaDepth: 10
   player: {fileID: 278340874}
   goblin: {fileID: 7090646728192034634, guid: 1983f6589fcd6b2469b29061d5663220, type: 3}
   isDebugTextOpen: 1
@@ -567,6 +570,37 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &534165996
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 534165997}
+  m_Layer: 0
+  m_Name: PatrolArea
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &534165997
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 534165996}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -624,6 +658,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 552584505736408950, guid: 5b244af6140aa4842a0f8ec3771b3542, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1289220953190886408, guid: 5b244af6140aa4842a0f8ec3771b3542, type: 3}
       propertyPath: m_Name
       value: Player
@@ -631,6 +669,14 @@ PrefabInstance:
     - target: {fileID: 1289220953190886408, guid: 5b244af6140aa4842a0f8ec3771b3542, type: 3}
       propertyPath: m_TagString
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 2828135318426859605, guid: 5b244af6140aa4842a0f8ec3771b3542, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3131910163531493634, guid: 5b244af6140aa4842a0f8ec3771b3542, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3880273325222405036, guid: 5b244af6140aa4842a0f8ec3771b3542, type: 3}
       propertyPath: m_Enabled
@@ -747,3 +793,4 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 331546889}
   - {fileID: 2066536975}
+  - {fileID: 534165997}
