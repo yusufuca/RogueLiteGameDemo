@@ -213,7 +213,7 @@ GameObject:
   - component: {fileID: 5035587214794072068}
   m_Layer: 0
   m_Name: Goblin
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -280,6 +280,7 @@ MonoBehaviour:
   myData: {fileID: 11400000, guid: ba1bd06e45545134d9a4095c697cdb00, type: 2}
   maxPatrolLength: 10
   marker: {fileID: 417303180041795355, guid: 250165e5f88be224c9033a9daa26daa5, type: 3}
+  markers: []
 --- !u!23 &4831481181662556875
 MeshRenderer:
   m_ObjectHideFlags: 0

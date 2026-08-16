@@ -2,9 +2,10 @@ using UnityEngine;
 
 public class PlayerMovement : Movement
 {
-    
+    PlayerAttack playerAttack;
     protected override void Start()
     {
+        playerAttack = GetComponent<PlayerAttack>();
         base.Start();
     }
 
@@ -12,7 +13,7 @@ public class PlayerMovement : Movement
     protected override void Update()
     {
         MovementKeys();
-        //lastPos = transform.position;
+        
         base.Update();
         
     }
@@ -20,10 +21,17 @@ public class PlayerMovement : Movement
     {
         if (Input.GetMouseButtonDown(1))
         {
+            playerAttack.isTargetLocked = false;
             RaycastHit hit;
             Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit);
             targetPos = hit.point;
             targetPos.y = 0;
+        }
+        
+        if(playerAttack.isTargetLocked) 
+        {
+            targetPos = playerAttack.targetPos;
+            Debug.Log("Player Moving To Enemy");
         }
         base.MoveToPoisiton();
     }
@@ -37,6 +45,7 @@ public class PlayerMovement : Movement
             targetPos = transform.position;
             Vector3 lookDirection = new Vector3(mvRL, 0, mvFB);
             transform.forward = lookDirection;
+            playerAttack.isTargetLocked = false;
         }
 
         charController.Move(movement * Time.deltaTime);
