@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class PlayerMovement : Movement
 {
-    PlayerAttack playerAttack;
+    Attack playerAttack;
     protected override void Start()
     {
-        playerAttack = GetComponent<PlayerAttack>();
+        playerAttack = GetComponent<Attack>();
         base.Start();
     }
 

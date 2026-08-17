@@ -10,6 +10,7 @@ public class Movement : MonoBehaviour
     protected float Speed = 5f;
     protected Vector3 playerVelocity;
     protected bool isGrounded;
+    public bool isMoving;
     protected float gravityValue = -9.8f;
     protected float jumpHeight = 2f;
     protected TextMeshPro debugText;
@@ -35,7 +36,7 @@ public class Movement : MonoBehaviour
         if (gm.isDebugTextOpen && debugText != null)
         {
             
-            debugText.text = ("Speed: " + Speed);
+            //debugText.text = ("Speed: " + Speed);
         }
         isGrounded = charController.isGrounded;
         
@@ -85,10 +86,12 @@ public class Movement : MonoBehaviour
     {
         if (lastPos != transform.position) 
         {
+            isMoving = true;
             animator.SetBool("isMoving" , true);
         }
         else
         {
+            isMoving = false;
             animator.SetBool("isMoving", false);
         }
     }

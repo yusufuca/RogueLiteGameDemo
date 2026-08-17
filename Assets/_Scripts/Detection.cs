@@ -22,35 +22,7 @@ public class Detection : MonoBehaviour
     }
     public void DetectPlayer()
     {
-        /*if (player != null)
-        {
-            float distance = Vector3.Distance(transform.position, player.transform.position);
-            if (distance < visionDistance)
-            {
-                Vector3 directionToPlayer = (player.transform.position - transform.position).normalized;
-                float angle = Vector3.Angle(transform.forward, directionToPlayer);
-                if (angle < visionAngle)
-                {
-                    Debug.Log("I can see the player!");
-                    targetPos = player.transform.position;
-                }
-                else
-                {
-                    targetPos = transform.position;
-                }
-
-            }
-            else
-            {
-                targetPos = transform.position;
-            }
-            
-        }
-        else
-        {
-            Debug.Log("Player Data is Null");
-            targetPos = transform.position;
-        }*/
+  
         RaycastHit hit;
         Vector3 rayOrigin = transform.position + (Vector3.up * 1.5f);
         for(int i = 0; i < maxRayCount; i++)
@@ -70,7 +42,7 @@ public class Detection : MonoBehaviour
                 if (hit.collider.CompareTag("Player"))
                 {
                     isRayHitPlayer=true;
-                    Debug.Log("Ray Hit The Player");
+                    //Debug.Log("Ray Hit The Player");
                     targetPos = player.transform.position;
                 }
                 else
