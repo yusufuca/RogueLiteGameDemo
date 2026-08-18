@@ -33,11 +33,12 @@ public class EnemyMovement : Movement
         detection.DetectPlayer();
         if (detection.isRayHitPlayer)
         {
+            
             targetPos = detection.targetPos;
         }
         else
         {
-            EnemyPatrol();
+            //EnemyPatrol();
         }
             base.MoveToPoisiton();
     }

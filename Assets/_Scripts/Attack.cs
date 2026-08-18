@@ -1,5 +1,6 @@
 using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.ProBuilder.MeshOperations;
 
@@ -9,6 +10,7 @@ public class Attack : MonoBehaviour
     
     protected bool isAttacking = false;
     protected TextMeshPro debugText;
+    protected TextMeshPro damagePopUpText;
     public bool isTargetLocked;
     Animator animator;
     public Movement movementScript;
@@ -19,11 +21,25 @@ public class Attack : MonoBehaviour
     public bool isSelectedWithMouse;
     Collider closestEnemy = null;
     public bool isTimerRunning;
+    public float currentHP;
+    public float currentDamage;
     protected virtual void Start()
     {
         animator = GetComponentInChildren<Animator>();
-        debugText = gameObject.GetComponentInChildren<TextMeshPro>();
-        
+        movementScript = GetComponent<Movement>();
+        Transform foundDebugText = transform.Find("DebugText");
+        if (foundDebugText != null)
+        {
+            debugText = foundDebugText.GetComponent<TextMeshPro>();
+        }
+        else Debug.Log("Cant Find Debug Text" + gameObject.name);
+
+        Transform foundDamagePopUpText = transform.Find("DamagePopUp");
+        if (foundDamagePopUpText != null)
+        {
+            damagePopUpText = foundDamagePopUpText.GetComponent<TextMeshPro>();
+        }
+        else Debug.Log("Cant Find Damage PopUp Text" + gameObject.name);
     }
 
     protected virtual void Update()
@@ -65,6 +81,15 @@ public class Attack : MonoBehaviour
       
      
     }
+    public void TakeDamage(float damage)
+    {
+
+        currentHP -= damage;
+        if (damagePopUpText != null)
+        {
+            damagePopUpText.text = ("Current Hp: " + currentHP + ("Damage Taken: ") + damage);
+        }
+    }
     protected virtual void AttackClosest() 
     {
         Collider[] nearEnemies = Physics.OverlapSphere(transform.position, overlapSphereRadius, mask);
@@ -73,7 +98,7 @@ public class Attack : MonoBehaviour
         float closestDistance = Mathf.Infinity;
         if (nearEnemies.Length > 0)
         {
-            Debug.Log("there is " + nearEnemies.Length + (" enemy"));
+            //Debug.Log("there is " + nearEnemies.Length + (" enemy"));
             for(int i = 0; i < nearEnemies.Length; i++)
             {
                 Collider c = nearEnemies[i];
@@ -82,7 +107,7 @@ public class Attack : MonoBehaviour
                 {
                     closestDistance = distance;
                     closestEnemy = c;
-                    Debug.Log("enemy is " + c.name);
+                    //Debug.Log("enemy is " + c.name);
                 }
              
             }
@@ -91,11 +116,11 @@ public class Attack : MonoBehaviour
         else
         {
             closestEnemy = null;
-            Debug.Log("Cant Detect Anyone");
+            //Debug.Log("Cant Detect Anyone");
         }
         if (closestEnemy != null && !isTargetLocked && canAttackClosest && !isAttacking && !isSelectedWithMouse)
         {
-            Debug.Log("Attack requested to " + closestEnemy.name);
+            
             isTargetLocked = true;
         }
         if (isTargetLocked && !isSelectedWithMouse && closestEnemy != null)
@@ -106,9 +131,10 @@ public class Attack : MonoBehaviour
     }
     protected virtual void AttackRequest(Collider enemy)
     {
+       
         if (enemy != null)
         {
-            
+            Debug.Log(gameObject.name + " Attack requested to " + enemy.gameObject.name);
             if (isTargetLocked)
             {
                 float distance = Vector3.Distance(transform.position, enemy.gameObject.transform.position);
@@ -148,19 +174,22 @@ public class Attack : MonoBehaviour
     public IEnumerator CanAttackTimer()
     {
         isTimerRunning = true;
-        if (movementScript.isMoving) 
+        if (movementScript.isMoving != null)
         {
-            canAttackClosest = false;
-            yield return null;
-        }
-        else
-        {
-            if (!canAttackClosest)
+            if (movementScript.isMoving)
             {
-                Debug.Log("waiting to attack the closest enemy for 2 sec");
+                canAttackClosest = false;
+                yield return null;
             }
-            yield return new WaitForSeconds(2);
-            canAttackClosest=true;
+            else
+            {
+                if (!canAttackClosest)
+                {
+                    Debug.Log("waiting to attack the closest enemy for 2 sec");
+                }
+                yield return new WaitForSeconds(2);
+                canAttackClosest = true;
+            }
         }
         isTimerRunning = false;
     }

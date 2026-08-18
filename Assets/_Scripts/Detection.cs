@@ -10,6 +10,7 @@ public class Detection : MonoBehaviour
     public bool isRayHitPlayer = false;
     public Vector3 targetPos;
     LayerMask layerMask;
+    public Collider detectedCollider;
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
@@ -44,9 +45,11 @@ public class Detection : MonoBehaviour
                     isRayHitPlayer=true;
                     //Debug.Log("Ray Hit The Player");
                     targetPos = player.transform.position;
+                    detectedCollider = hit.collider;
                 }
                 else
                 {
+                    detectedCollider=null;
                     isRayHitPlayer = false;
                 }
             }

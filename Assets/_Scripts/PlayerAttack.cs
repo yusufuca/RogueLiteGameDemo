@@ -4,14 +4,16 @@ public class PlayerAttack : Attack
 {
     //PlayerMovement playerMovement;
     Collider onMouseEnemy;
-    
+    public float HP = 100;
+    public float damage = 10;
     
     
     protected override void Start()
     {
         //playerMovement = GetComponent<PlayerMovement>();
         base.Start();
-        
+        base.currentHP = HP;
+        base.currentDamage = damage;
     }
     protected override void Update()
     {

@@ -201,6 +201,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ca6c68185630de418756de51f7abc92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+--- !u!114 &244063455 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1714845825590142613, guid: 400ae728cd9321e4bbb16ea4a7a91a4d, type: 3}
+  m_PrefabInstance: {fileID: 1582547431059044216}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 244063451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7144666932f5f564789147a4501dbab8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -366,7 +377,7 @@ GameObject:
   - component: {fileID: 331546886}
   m_Layer: 0
   m_Name: Plane
-  m_TagString: Untagged
+  m_TagString: Plane
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -680,6 +691,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1714074454542504484, guid: 400ae728cd9321e4bbb16ea4a7a91a4d, type: 3}
+      propertyPath: attackScript
+      value: 
+      objectReference: {fileID: 244063455}
     - target: {fileID: 1714845825590142613, guid: 400ae728cd9321e4bbb16ea4a7a91a4d, type: 3}
       propertyPath: weapon
       value: 
@@ -699,6 +714,14 @@ PrefabInstance:
     - target: {fileID: 5072796300454438740, guid: 400ae728cd9321e4bbb16ea4a7a91a4d, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5525253144046501174, guid: 400ae728cd9321e4bbb16ea4a7a91a4d, type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: c4bb6148b7ee4a24f86d014befae0e6f, type: 3}
+    - target: {fileID: 5525253144046501174, guid: 400ae728cd9321e4bbb16ea4a7a91a4d, type: 3}
+      propertyPath: m_WarningMessage
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7306434889992147185, guid: 400ae728cd9321e4bbb16ea4a7a91a4d, type: 3}
       propertyPath: m_LocalPosition.x

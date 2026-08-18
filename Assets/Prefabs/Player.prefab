@@ -781,6 +781,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ca6c68185630de418756de51f7abc92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+  isMoving: 0
 --- !u!143 &4077226638169219325
 CharacterController:
   m_ObjectHideFlags: 0
@@ -818,12 +819,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7144666932f5f564789147a4501dbab8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
-  weapon: {fileID: 0}
+  weapon: {fileID: 4695408995082361631}
   isTargetLocked: 0
+  movementScript: {fileID: 0}
   mask:
     serializedVersion: 2
     m_Bits: 0
   targetPos: {x: 0, y: 0, z: 0}
+  overlapSphereRadius: 10
+  canAttackClosest: 0
+  isSelectedWithMouse: 0
+  isTimerRunning: 0
+  currentHP: 0
+  currentDamage: 0
+  HP: 100
+  damage: 10
 --- !u!1 &5123109833482236054
 GameObject:
   m_ObjectHideFlags: 0
@@ -871,7 +881,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 5a0a3e2e50d46234a81e008d5911e835, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -1871,11 +1881,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5493927146130805238, guid: 558ab61250f5c0744abb807dfb0b0c56, type: 3}
+      propertyPath: parent
+      value: 
+      objectReference: {fileID: 5072796300454438740}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 558ab61250f5c0744abb807dfb0b0c56, type: 3}
+--- !u!1 &4695408995082361631 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1936184560993540301, guid: 558ab61250f5c0744abb807dfb0b0c56, type: 3}
+  m_PrefabInstance: {fileID: 6626980894308778962}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8325777499181168132 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2917451321830372822, guid: 558ab61250f5c0744abb807dfb0b0c56, type: 3}
