@@ -28,7 +28,7 @@ public class PlayerMovement : Movement
             targetPos.y = 0;
         }
         
-        if(playerAttack.isTargetLocked) 
+        if(playerAttack.isTargetLocked || playerAttack.requestTargetPos) 
         {
             targetPos = playerAttack.targetPos;
             Debug.Log("Player Moving To Enemy");

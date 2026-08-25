@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2833800533645923503}
   m_Layer: 0
   m_Name: BattleAxe_GEO
-  m_TagString: Untagged
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -105,6 +105,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f01f9cc0601cd7d4691993b158d275ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Weapon
+  attackScript: {fileID: 0}
+  damage: 5
+  parent: {fileID: 0}
+  parentTag: 
 --- !u!65 &3599235345257729857
 BoxCollider:
   m_ObjectHideFlags: 0

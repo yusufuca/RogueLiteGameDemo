@@ -8,6 +8,7 @@ public class EnemyAttack : Attack
     {
         detection = GetComponent<Detection>();
         currentHP = myData.HP;
+        base.maxHP = currentHP;
         base.Start();
 
     }

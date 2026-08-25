@@ -12,6 +12,7 @@ public class PlayerAttack : Attack
     {
         //playerMovement = GetComponent<PlayerMovement>();
         base.Start();
+        base.maxHP = HP;
         base.currentHP = HP;
         base.currentDamage = damage;
     }

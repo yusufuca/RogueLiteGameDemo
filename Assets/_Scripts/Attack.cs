@@ -20,9 +20,13 @@ public class Attack : MonoBehaviour
     public bool canAttackClosest;
     public bool isSelectedWithMouse;
     Collider closestEnemy = null;
-    public bool isTimerRunning;
+    public bool requestTargetPos;
     public float currentHP;
+    public float maxHP;
     public float currentDamage;
+    public float waitTime;
+    private float initialWaitTime = 5;
+
     protected virtual void Start()
     {
         animator = GetComponentInChildren<Animator>();
@@ -40,6 +44,8 @@ public class Attack : MonoBehaviour
             damagePopUpText = foundDamagePopUpText.GetComponent<TextMeshPro>();
         }
         else Debug.Log("Cant Find Damage PopUp Text" + gameObject.name);
+        waitTime = initialWaitTime;
+        
     }
 
     protected virtual void Update()
@@ -64,10 +70,7 @@ public class Attack : MonoBehaviour
             Debug.Log("weapon is null"); 
         }
 
-        if (!isTimerRunning)
-        {
-            StartCoroutine(CanAttackTimer());
-        }
+   
         AttackClosest();   
     }
     
@@ -118,15 +121,29 @@ public class Attack : MonoBehaviour
             closestEnemy = null;
             //Debug.Log("Cant Detect Anyone");
         }
-        if (closestEnemy != null && !isTargetLocked && canAttackClosest && !isAttacking && !isSelectedWithMouse)
+        float timer = Time.deltaTime;
+        waitTime -= timer;
+        if (closestEnemy != null && !isAttacking && !isSelectedWithMouse && !movementScript.isMoving)
         {
+          
             
-            isTargetLocked = true;
+            
+            if (waitTime < 0)
+            {
+                isTargetLocked = true;
+                AttackRequest(closestEnemy);
+             
+            }
+
+
+
         }
-        if (isTargetLocked && !isSelectedWithMouse && closestEnemy != null)
+       
+        if (movementScript.isMoving && !isTargetLocked)
         {
-            AttackRequest(closestEnemy);
+            waitTime = initialWaitTime;
         }
+
 
     }
     protected virtual void AttackRequest(Collider enemy)
@@ -142,6 +159,7 @@ public class Attack : MonoBehaviour
 
                 if (distance < 2f)
                 {
+                    requestTargetPos = false;
                     targetPos = transform.position;
 
                     Attacking();
@@ -153,7 +171,7 @@ public class Attack : MonoBehaviour
                 }
                 else
                 {
-                    
+                    requestTargetPos = true;
                     targetPos = enemy.gameObject.transform.position;
                     
                 }
@@ -171,27 +189,6 @@ public class Attack : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, overlapSphereRadius);
        
     }
-    public IEnumerator CanAttackTimer()
-    {
-        isTimerRunning = true;
-        if (movementScript.isMoving != null)
-        {
-            if (movementScript.isMoving)
-            {
-                canAttackClosest = false;
-                yield return null;
-            }
-            else
-            {
-                if (!canAttackClosest)
-                {
-                    Debug.Log("waiting to attack the closest enemy for 2 sec");
-                }
-                yield return new WaitForSeconds(2);
-                canAttackClosest = true;
-            }
-        }
-        isTimerRunning = false;
-    }
+
 
 }
