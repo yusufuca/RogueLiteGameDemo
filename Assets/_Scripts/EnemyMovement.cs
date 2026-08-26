@@ -40,7 +40,11 @@ public class EnemyMovement : Movement
         {
             //EnemyPatrol();
         }
-            base.MoveToPoisiton();
+        
+   
+        base.MoveToPoisiton();
+        Vector3 gravityMovement = new Vector3(0, playerVelocity.y, 0);
+        charController.Move(gravityMovement * Time.deltaTime);
     }
 
 

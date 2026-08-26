@@ -10,6 +10,7 @@ public class Weapon : MonoBehaviour
     public GameObject parent;
     public string parentTag;
     public TextMeshPro damagePopUp;
+    public bool damageGiven;
     private void Start()
     {
         weaponCollider = GetComponent<BoxCollider>();
@@ -21,14 +22,19 @@ public class Weapon : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject != parent && !other.CompareTag("Plane") && !other.CompareTag("Weapon") && !other.CompareTag(parentTag))
+        if (!damageGiven)
         {
-            Debug.Log(parent.name + " hitted: " + other.tag + other.gameObject.name);
-            other.gameObject.GetComponent<Attack>().TakeDamage(damage + attackScript.currentDamage);
-            CharUIUpdater uiScript = other.gameObject.GetComponentInChildren<CharUIUpdater>();
-            StartCoroutine(uiScript.DamagePopUp(damage + attackScript.currentDamage));   
-            
+            if (other.gameObject != parent && !other.CompareTag("Plane") && !other.CompareTag("Weapon") && !other.CompareTag(parentTag))
+            {
+                Debug.Log(parent.name + " hitted: " + other.tag + other.gameObject.name);
+                Attack otherAttackScript = other.gameObject.GetComponent<Attack>();
+                float otherHp = otherAttackScript.currentHP;
+                otherAttackScript.TakeDamage(damage + attackScript.currentDamage);
+                CharUIUpdater uiScript = other.gameObject.GetComponentInChildren<CharUIUpdater>();
+                StartCoroutine(uiScript.DamagePopUp(damage + attackScript.currentDamage));
+                damageGiven = true;
 
+            }
         }
     }
 }

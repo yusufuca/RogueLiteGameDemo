@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Data.Common;
+using System.Reflection.Metadata;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -23,9 +25,17 @@ public class Attack : MonoBehaviour
     public bool requestTargetPos;
     public float currentHP;
     public float maxHP;
+    public float initialDamage;
     public float currentDamage;
     public float waitTime;
     private float initialWaitTime = 5;
+    //COMBAT
+    public float comboTime;
+    public float initialComboTime = 2;
+    public float attackCoolDown = 0.2f;
+    public float lastAttackTime;
+    private int attackCount;
+    public float attackSpeed;
 
     protected virtual void Start()
     {
@@ -45,6 +55,7 @@ public class Attack : MonoBehaviour
         }
         else Debug.Log("Cant Find Damage PopUp Text" + gameObject.name);
         waitTime = initialWaitTime;
+        comboTime = initialComboTime;
         
     }
 
@@ -52,7 +63,7 @@ public class Attack : MonoBehaviour
     {
         if (weapon != null)
         {
-            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attacking"))
+            if (animator.GetCurrentAnimatorStateInfo(0).IsTag("Attacking"))
             {
                 weapon.GetComponent<BoxCollider>().enabled = true;
                 Debug.Log("PlayerAttacking");
@@ -63,6 +74,7 @@ public class Attack : MonoBehaviour
                 //Debug.Log("Buggy");
                 weapon.GetComponent<BoxCollider>().enabled = false;
                 isAttacking = false;
+                weapon.GetComponent<Weapon>().damageGiven = false;
             }
         }
         else 
@@ -71,18 +83,62 @@ public class Attack : MonoBehaviour
         }
 
    
-        AttackClosest();   
+        AttackClosest();
+
+        debugText.text = ("Attack Count: " + attackCount);
+        float timer = Time.deltaTime;
+        comboTime -= timer;
+        if (attackCount > 0)
+        {
+            if (comboTime <= 0 || movementScript.isMoving)
+            {
+                attackCount = 0;
+                comboTime = initialComboTime;
+            }
+        }
+        else
+        {
+            comboTime = initialComboTime;   
+        }
+        animator.SetFloat("AttackCount", attackCount);
+        animator.SetFloat("AttackSpeed", attackSpeed);
+        CalculateComboDamage();
     }
     
 
     protected virtual void Attacking()
     {
+        if (isAttacking) return;
+        if (Time.time - lastAttackTime < attackCoolDown) return;
+        lastAttackTime = Time.time;
+        attackCount++;
+       
+       
         
-        
+        if(attackCount > 3)
+        {
+            attackCount = 1;
+        }
+        comboTime = initialComboTime;
+        animator.SetFloat("AttackCount", attackCount);
         animator.SetTrigger("Attack");
 
-      
-     
+    }
+    protected virtual void CalculateComboDamage()
+    {
+        switch (attackCount)
+        {
+            case 1:
+                currentDamage = initialDamage;
+                break;
+            case 2:
+                currentDamage = initialDamage * 1.2f;
+                break;
+            case 3:
+                currentDamage = initialDamage * 2;
+                break;
+
+        }
     }
     public void TakeDamage(float damage)
     {
@@ -166,11 +222,15 @@ public class Attack : MonoBehaviour
                    
                         isTargetLocked = false;
                         isSelectedWithMouse = false;
-
+                    
                     
                 }
                 else
                 {
+                    if (enemy.gameObject == null || movementScript.isMoving)
+                    {
+                        targetPos = transform.position;
+                    }
                     requestTargetPos = true;
                     targetPos = enemy.gameObject.transform.position;
                     

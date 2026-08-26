@@ -16,5 +16,6 @@ public class NPC_Types : ScriptableObject
     public float moveSpeed;
     public float damage;
     public float maxHealth;
+    public float attackSpeed;
     public GameObject prefab;
 }

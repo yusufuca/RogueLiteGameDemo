@@ -12,7 +12,7 @@ public class Movement : MonoBehaviour
     protected bool isGrounded;
     public bool isMoving;
     protected float gravityValue = -9.8f;
-    protected float jumpHeight = 2f;
+    public float jumpHeight = 2f;
     protected TextMeshPro debugText;
     protected Vector3 lastPos;
 
@@ -47,16 +47,20 @@ public class Movement : MonoBehaviour
                 playerVelocity.y = -2f;
             } 
         }
-       
+     
         if (isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
             playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravityValue);
+            animator.SetTrigger("Jump");
+           
         }
         playerVelocity.y += gravityValue * Time.deltaTime;
         MoveToPoisiton();
        
         AnimateChar();
         lastPos = transform.position;
+        animator.SetBool("isGrounded", isGrounded);
+        animator.SetFloat("VerticalVelocity", playerVelocity.y);
     }
     protected virtual void MoveToPoisiton()
     {
@@ -84,7 +88,7 @@ public class Movement : MonoBehaviour
     }
     protected virtual void AnimateChar()
     {
-        if (lastPos != transform.position) 
+        if (lastPos.x != transform.position.x || lastPos.z != transform.position.z) 
         {
             isMoving = true;
             animator.SetBool("isMoving" , true);

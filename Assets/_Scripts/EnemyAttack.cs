@@ -9,6 +9,7 @@ public class EnemyAttack : Attack
         detection = GetComponent<Detection>();
         currentHP = myData.HP;
         base.maxHP = currentHP;
+        attackSpeed = myData.attackSpeed;
         base.Start();
 
     }
@@ -16,6 +17,11 @@ public class EnemyAttack : Attack
     {
         AttackRequest();
         base.Update();
+
+        if(currentHP <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 
     protected override void AttackClosest()
