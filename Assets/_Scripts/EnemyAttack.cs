@@ -15,6 +15,7 @@ public class EnemyAttack : Attack
     }
     protected override void Update()
     {
+        if (isStunned) return;
         AttackRequest();
         base.Update();
 

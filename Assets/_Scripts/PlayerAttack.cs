@@ -20,6 +20,8 @@ public class PlayerAttack : Attack
     }
     protected override void Update()
     {
+
+        if (isStunned) return;
         AttackRequest();
   
 
@@ -28,6 +30,7 @@ public class PlayerAttack : Attack
             base.Attacking();
         }
         base.Update();
+        
     }
     public void AttackRequest()
     {

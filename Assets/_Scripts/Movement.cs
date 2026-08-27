@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using TMPro;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ public class Movement : MonoBehaviour
     public float jumpHeight = 2f;
     protected TextMeshPro debugText;
     protected Vector3 lastPos;
+    Attack attackScript;
 
     private void Awake()
     {
@@ -28,11 +30,13 @@ public class Movement : MonoBehaviour
         charController = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
         targetPos = transform.position;
+        attackScript = GetComponent<Attack>();
     }
 
 
     protected virtual void Update()
     {
+        if (attackScript.isStunned) return;
         if (gm.isDebugTextOpen && debugText != null)
         {
             

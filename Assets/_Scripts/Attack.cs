@@ -14,7 +14,7 @@ public class Attack : MonoBehaviour
     protected TextMeshPro debugText;
     protected TextMeshPro damagePopUpText;
     public bool isTargetLocked;
-    Animator animator;
+    protected Animator animator;
     public Movement movementScript;
     public LayerMask mask;
     public Vector3 targetPos;
@@ -36,6 +36,7 @@ public class Attack : MonoBehaviour
     public float lastAttackTime;
     private int attackCount;
     public float attackSpeed;
+    public bool isStunned;
 
     protected virtual void Start()
     {
@@ -61,6 +62,7 @@ public class Attack : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (isStunned) return;
         if (weapon != null)
         {
             if (animator.GetCurrentAnimatorStateInfo(0).IsTag("Attacking"))
