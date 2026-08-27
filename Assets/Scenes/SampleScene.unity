@@ -2490,6 +2490,10 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4006969275178170099, guid: 400ae728cd9321e4bbb16ea4a7a91a4d, type: 3}
+      propertyPath: stamina
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 4006969275178170099, guid: 400ae728cd9321e4bbb16ea4a7a91a4d, type: 3}
       propertyPath: jumpHeight
       value: 5
       objectReference: {fileID: 0}
