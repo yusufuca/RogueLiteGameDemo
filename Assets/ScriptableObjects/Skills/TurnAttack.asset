@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Skills
   skillTpye: 1
   value: 1.2
-  coolDown: 5
+  coolDown: 8
   isContinous: 1
-  duration: 2
+  duration: 3
   suggestedClass: 0
   classMultiplier: 0
   animTriggerString: turnAttack

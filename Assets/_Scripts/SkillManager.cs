@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SkillManager : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class SkillManager : MonoBehaviour
     Animator animator;
     Attack myAttackScript;
     float skillValue;
+    public GameObject coolDownIcon;
+    public GameObject durationBar;
     private void Start()
     {
         animator = GetComponentInChildren<Animator>();
@@ -18,6 +21,7 @@ public class SkillManager : MonoBehaviour
     }
     public void Update()
     {
+       
         if (Input.GetKeyDown(KeyCode.Q)) 
         {
             CastSkill(mySkills[0]);
@@ -62,13 +66,28 @@ public class SkillManager : MonoBehaviour
     private IEnumerator ContinousSkillRoutine(Skills skill)
     {
         animator.SetBool(skill.animTriggerString, true);
-        yield return new WaitForSeconds(skill.duration);
+        float timer = skill.duration;
+        while(timer > 0)
+        {
+            timer -= Time.deltaTime;
+            durationBar.GetComponent<Image>().fillAmount = Mathf.Clamp01(timer/skill.duration);
+            yield return null;
+        }
+        durationBar.GetComponent<Image>().fillAmount = 0;
         animator.SetBool(skill.animTriggerString, false);
     }
     private IEnumerator CoolDownRoutine(Skills skill)
     {
         castedSkills.Add(skill);
-        yield return new WaitForSeconds(skill.coolDown);
+        float timer = skill.coolDown;
+        while(timer > 0) 
+        {
+            timer -= Time.deltaTime;
+            coolDownIcon.GetComponent<Image>().fillAmount = Mathf.Clamp01(timer / skill.coolDown);
+            yield return null;
+        }
+        coolDownIcon.GetComponent<Image>().fillAmount = 0;
+       
         RemoveTheSkillBuff(skill);
         castedSkills.Remove(skill);
     }
@@ -134,6 +153,8 @@ public class SkillManager : MonoBehaviour
             
         }
     }
+
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;

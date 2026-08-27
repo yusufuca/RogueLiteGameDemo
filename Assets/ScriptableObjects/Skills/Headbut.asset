@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Headbut
   m_EditorClassIdentifier: Assembly-CSharp::Skills
   skillTpye: 3
-  value: 0.5
+  value: 5
   coolDown: 5
   isContinous: 0
   duration: 0
