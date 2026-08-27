@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public enum CharClasses
@@ -32,6 +33,5 @@ public class Skills : ScriptableObject
     public float classMultiplier;
 
     public string animTriggerString;
-    
-
+    public GameObject imagePrefab;
 }

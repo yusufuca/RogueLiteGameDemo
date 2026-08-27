@@ -20,3 +20,7 @@ MonoBehaviour:
   suggestedClass: 0
   classMultiplier: 0
   animTriggerString: headbut
+  imagePrefab: {fileID: 8225994841279680838, guid: 5775961bc8b857f4baa6caed7fd2f530, type: 3}
+  skillImage: {fileID: 0}
+  coolDownImage: {fileID: 0}
+  durationImage: {fileID: 0}

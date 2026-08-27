@@ -1,5 +1,6 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,17 +8,19 @@ public class SkillManager : MonoBehaviour
 {
     public List<Skills> mySkills = new List<Skills>();
     public List<Skills> castedSkills = new List<Skills>();
+    
     Skills lastCastSkill;
     Animator animator;
     Attack myAttackScript;
     float skillValue;
     public GameObject coolDownIcon;
     public GameObject durationBar;
+    public UI_Manager UI_Manager;
     private void Start()
     {
         animator = GetComponentInChildren<Animator>();
         myAttackScript = GetComponent<Attack>();
-        
+        UI_Manager = FindAnyObjectByType<UI_Manager>();
     }
     public void Update()
     {
@@ -37,6 +40,8 @@ public class SkillManager : MonoBehaviour
         if (!castedSkills.Contains(skill))
         {
             Debug.Log("Skill Casting");
+            int skillIndex = 0;
+       
 
             float duration = skill.duration;
             string skillString = skill.animTriggerString;
@@ -60,6 +65,7 @@ public class SkillManager : MonoBehaviour
         else
         {
             Debug.Log("Wait Cooldown");
+            StartCoroutine(CoolDownDeny(skill));
         }
 
     }
@@ -67,26 +73,35 @@ public class SkillManager : MonoBehaviour
     {
         animator.SetBool(skill.animTriggerString, true);
         float timer = skill.duration;
-        while(timer > 0)
+        int skillIndex = 0;
+        skillIndex = mySkills.IndexOf(skill);
+        Image skillImage = UI_Manager.skillContainer[skillIndex].transform.Find("Duration").GetComponent<Image>();
+        while (timer > 0)
         {
             timer -= Time.deltaTime;
-            durationBar.GetComponent<Image>().fillAmount = Mathf.Clamp01(timer/skill.duration);
+            skillImage.fillAmount = Mathf.Clamp01(timer/skill.duration);
             yield return null;
         }
-        durationBar.GetComponent<Image>().fillAmount = 0;
+        skillImage.fillAmount = 0;
         animator.SetBool(skill.animTriggerString, false);
     }
     private IEnumerator CoolDownRoutine(Skills skill)
     {
         castedSkills.Add(skill);
         float timer = skill.coolDown;
-        while(timer > 0) 
+        int skillIndex = 0;
+        skillIndex = mySkills.IndexOf(skill);
+        Image skillImage = UI_Manager.skillContainer[skillIndex].transform.Find("CoolDown").GetComponent<Image>();
+        while (timer > 0) 
         {
+            
             timer -= Time.deltaTime;
-            coolDownIcon.GetComponent<Image>().fillAmount = Mathf.Clamp01(timer / skill.coolDown);
+            
+          skillImage.fillAmount = Mathf.Clamp01(timer / skill.coolDown);
             yield return null;
         }
-        coolDownIcon.GetComponent<Image>().fillAmount = 0;
+
+        skillImage.fillAmount = 0;
        
         RemoveTheSkillBuff(skill);
         castedSkills.Remove(skill);
@@ -98,6 +113,24 @@ public class SkillManager : MonoBehaviour
         yield return new WaitForSeconds(skill.value);
         Debug.Log("Enemy stun false");
         script.isStunned = false;
+    }
+    private IEnumerator CoolDownDeny(Skills skill)
+    {
+        int skillIndex = 0;
+        skillIndex = mySkills.IndexOf(skill);
+        Image denyImage = UI_Manager.skillContainer[skillIndex].transform.Find("Deny").GetComponent<Image>();
+
+        float timer = 0.5f;
+
+        while (timer > 0)
+        {
+            if (!castedSkills.Contains(skill)) break;
+            timer -= Time.deltaTime;
+            denyImage.enabled = true;
+            yield return null;
+        }
+        denyImage.enabled = false;
+
     }
     private void CalculateValue(Skills skill)
     {

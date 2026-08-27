@@ -13,10 +13,12 @@ public class PlayerMovement : Movement
     public float mySpeed;
     public bool isDashing;
     public Vector3 newTargetPos;
+    public float stamina;
     protected override void Start()
     {
         Speed = mySpeed;
         originaspeed = Speed;
+        currentStamina = stamina;
         playerAttack = GetComponent<Attack>();
         base.Start();
     }
@@ -29,14 +31,7 @@ public class PlayerMovement : Movement
         MovementKeys();
         base.Update();
         Dashing();
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            Speed = originaspeed * runMultiplier;
-        }
-        else
-        {
-            Speed = originaspeed;
-        }
+        StaminaCheck();
         animator.SetFloat("MoveSpeed", Speed);
     }
     protected override void MoveToPoisiton()
@@ -132,5 +127,26 @@ public class PlayerMovement : Movement
             }
         }
         return false;
+    }
+
+    private void StaminaCheck()
+    {
+        if (Input.GetKey(KeyCode.LeftShift) && currentStamina > 0)
+        {
+            
+            Speed = originaspeed * runMultiplier;
+            currentStamina -= Time.deltaTime * 5;
+          
+
+        }
+        else
+        {
+            Speed = originaspeed;
+            if (currentStamina < maxStamina)
+            {
+                currentStamina += Time.deltaTime * 5;
+              
+            }
+        }
     }
 }

@@ -20,3 +20,7 @@ MonoBehaviour:
   suggestedClass: 0
   classMultiplier: 0
   animTriggerString: turnAttack
+  imagePrefab: {fileID: 8225994841279680838, guid: 3e0d2b9fe3a8e054fa9d0e7dbb401ff5, type: 3}
+  skillImage: {fileID: 0}
+  coolDownImage: {fileID: 0}
+  durationImage: {fileID: 0}

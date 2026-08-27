@@ -16,6 +16,8 @@ public class Movement : MonoBehaviour
     public float jumpHeight = 2f;
     protected TextMeshPro debugText;
     protected Vector3 lastPos;
+    public float maxStamina;
+    public float currentStamina;
     Attack attackScript;
 
     private void Awake()
@@ -31,6 +33,7 @@ public class Movement : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         targetPos = transform.position;
         attackScript = GetComponent<Attack>();
+        maxStamina = currentStamina;
     }
 
 
