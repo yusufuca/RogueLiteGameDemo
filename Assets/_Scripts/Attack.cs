@@ -6,40 +6,42 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.ProBuilder.MeshOperations;
 
-public class Attack : MonoBehaviour
+public class Attack : MonoBehaviour, IDamagable
 {
-    public GameObject weapon; 
-    
-    protected bool isAttacking = false;
-    protected TextMeshPro debugText;
-    protected TextMeshPro damagePopUpText;
-    public bool isTargetLocked;
+    [Header("-----REFERENCES-----")]
+    [SerializeField] protected TextMeshPro debugText;
+    [SerializeField] protected TextMeshPro damagePopUpText;
+    [SerializeField] protected StatManager statManager;
     protected Animator animator;
     public Movement movementScript;
-    public LayerMask mask;
-    public Vector3 targetPos;
-    public float overlapSphereRadius = 10;
-    public bool canAttackClosest;
-    public bool isSelectedWithMouse;
-    Collider closestEnemy = null;
-    public bool requestTargetPos;
-    public float currentHP;
-    public float maxHP;
-    public float initialDamage;
-    public float currentDamage;
-    public float waitTime;
-    private float initialWaitTime = 5;
-    //COMBAT
+
+
+    [SerializeField] protected bool isAttacking = false;
     public float comboTime;
     public float initialComboTime = 2;
     public float attackCoolDown = 0.2f;
     public float lastAttackTime;
-    private int attackCount;
-    public float attackSpeed;
+    [SerializeField] private int attackCount;
     public bool isStunned;
+
+    [Header("-----WEAPON-----")]
+    public GameObject weapon;
+
+    [Header("-----TARGET & AI LOGICS-----")]
+    [SerializeField] Collider closestEnemy = null;
+    public Vector3 targetPos;
+    public bool requestTargetPos;
+    public bool isTargetLocked;
+    public float overlapSphereRadius = 10;
+    public bool canAttackClosest;
+    public bool isSelectedWithMouse;
+    public float waitTime;
+    [SerializeField] private float initialWaitTime = 5;
+  
 
     protected virtual void Start()
     {
+        statManager = GetComponent<StatManager>();
         animator = GetComponentInChildren<Animator>();
         movementScript = GetComponent<Movement>();
         Transform foundDebugText = transform.Find("DebugText");
@@ -103,7 +105,7 @@ public class Attack : MonoBehaviour
             comboTime = initialComboTime;   
         }
         animator.SetFloat("AttackCount", attackCount);
-        animator.SetFloat("AttackSpeed", attackSpeed);
+        animator.SetFloat("AttackSpeed", statManager.attackSpeed);
         CalculateComboDamage();
     }
     
@@ -131,29 +133,28 @@ public class Attack : MonoBehaviour
         switch (attackCount)
         {
             case 1:
-                currentDamage = initialDamage;
+                statManager.currentDamage = statManager.initialDamage;
                 break;
             case 2:
-                currentDamage = initialDamage * 1.2f;
+                statManager.currentDamage = statManager.initialDamage * 1.2f;
                 break;
             case 3:
-                currentDamage = initialDamage * 2;
+                statManager.currentDamage = statManager.initialDamage * 2;
                 break;
 
         }
     }
     public void TakeDamage(float damage)
     {
-
-        currentHP -= damage;
-        if (damagePopUpText != null)
+        if (statManager != null)
         {
-            damagePopUpText.text = ("Current Hp: " + currentHP + ("Damage Taken: ") + damage);
+            statManager.ApplyDamage(damage);
         }
+
     }
     protected virtual void AttackClosest() 
     {
-        Collider[] nearEnemies = Physics.OverlapSphere(transform.position, overlapSphereRadius, mask);
+        Collider[] nearEnemies = Physics.OverlapSphere(transform.position, overlapSphereRadius, statManager.mask);
         
         
         float closestDistance = Mathf.Infinity;

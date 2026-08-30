@@ -411,7 +411,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharUIUpdater
   Parent: {fileID: 5072796300454438740}
-  parentAttackScript: {fileID: 0}
+  parentStatManagerScript: {fileID: 0}
   Slider: {fileID: 0}
   damagePopUpText: {fileID: 0}
 --- !u!1 &1823582748620150350
@@ -1159,6 +1159,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7306434889992147185}
+  - component: {fileID: 5383674425494571934}
   - component: {fileID: 4006969275178170099}
   - component: {fileID: 4077226638169219325}
   - component: {fileID: 1714845825590142613}
@@ -1188,6 +1189,32 @@ Transform:
   - {fileID: 8628461653855935404}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5383674425494571934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5072796300454438740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2515b391ab2a4504eb82b6e4cb5f9de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StatManager
+  myData: {fileID: 11400000, guid: 9ddb0894f78d4de4289076e74e2c2098, type: 2}
+  currentHP: 0
+  maxHP: 0
+  Speed: 0
+  jumpHeight: 0
+  maxStamina: 0
+  currentStamina: 0
+  mask:
+    serializedVersion: 2
+    m_Bits: 64
+  initialDamage: 0
+  currentDamage: 0
+  attackSpeed: 0
+  currentCoin: 0
 --- !u!114 &4006969275178170099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1200,9 +1227,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ca6c68185630de418756de51f7abc92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+  myData: {fileID: 0}
+  statManager: {fileID: 0}
+  gm: {fileID: 0}
+  attackScript: {fileID: 0}
+  charController: {fileID: 0}
+  animator: {fileID: 0}
+  debugText: {fileID: 0}
+  playerVelocity: {x: 0, y: 0, z: 0}
+  targetPos: {x: 0, y: 0, z: 0}
+  gravityValue: -9.8
+  isGrounded: 0
   isMoving: 0
-  jumpHeight: 2
-  mySpeed: 0
+  lastPos: {x: 0, y: 0, z: 0}
   isDashing: 0
   newTargetPos: {x: 0, y: 0, z: 0}
 --- !u!143 &4077226638169219325
@@ -1242,30 +1279,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7144666932f5f564789147a4501dbab8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
-  weapon: {fileID: 4695408995082361631}
-  isTargetLocked: 0
+  debugText: {fileID: 0}
+  damagePopUpText: {fileID: 0}
+  statManager: {fileID: 0}
   movementScript: {fileID: 0}
-  mask:
-    serializedVersion: 2
-    m_Bits: 0
-  targetPos: {x: 0, y: 0, z: 0}
-  overlapSphereRadius: 10
-  canAttackClosest: 0
-  isSelectedWithMouse: 0
-  requestTargetPos: 0
-  currentHP: 0
-  maxHP: 0
-  initialDamage: 0
-  currentDamage: 0
-  waitTime: 0
+  isAttacking: 0
   comboTime: 0
   initialComboTime: 2
   attackCoolDown: 0.2
   lastAttackTime: 0
-  attackSpeed: 0
-  HP: 100
-  damage: 10
-  myAttackSpeed: 2
+  attackCount: 0
+  isStunned: 0
+  weapon: {fileID: 4695408995082361631}
+  closestEnemy: {fileID: 0}
+  targetPos: {x: 0, y: 0, z: 0}
+  requestTargetPos: 0
+  isTargetLocked: 0
+  overlapSphereRadius: 10
+  canAttackClosest: 0
+  isSelectedWithMouse: 0
+  waitTime: 0
+  initialWaitTime: 5
 --- !u!114 &3769269458181012351
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1281,6 +1315,10 @@ MonoBehaviour:
   mySkills:
   - {fileID: 11400000, guid: 6db4c51e167765f46b7a494b044b7053, type: 2}
   - {fileID: 11400000, guid: 6302d77498f8a4a479ec534250b48a3c, type: 2}
+  castedSkills: []
+  coolDownIcon: {fileID: 0}
+  durationBar: {fileID: 0}
+  UI_Manager: {fileID: 0}
 --- !u!1 &5123109833482236054
 GameObject:
   m_ObjectHideFlags: 0

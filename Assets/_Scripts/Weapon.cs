@@ -24,14 +24,10 @@ public class Weapon : MonoBehaviour
     {
         if (!damageGiven)
         {
-            if (other.gameObject != parent && !other.CompareTag("Plane") && !other.CompareTag("Weapon") && !other.CompareTag(parentTag))
+            if (other.gameObject != parent && other.TryGetComponent<IDamagable>(out IDamagable target))
             {
                 Debug.Log(parent.name + " hitted: " + other.tag + other.gameObject.name);
-                Attack otherAttackScript = other.gameObject.GetComponent<Attack>();
-                float otherHp = otherAttackScript.currentHP;
-                otherAttackScript.TakeDamage(damage + attackScript.currentDamage);
-                CharUIUpdater uiScript = other.gameObject.GetComponentInChildren<CharUIUpdater>();
-                StartCoroutine(uiScript.DamagePopUp(damage + attackScript.currentDamage));
+                target.TakeDamage(parent.GetComponent<StatManager>().currentDamage + damage);
                 damageGiven = true;
 
             }

@@ -6,43 +6,49 @@ using UnityEngine.UI;
 public class CharUIUpdater : MonoBehaviour
 {
     public GameObject Parent;
-    public Attack parentAttackScript;
+    public StatManager parentStatManagerScript;
     public Slider Slider;
-    public TextMeshPro damagePopUpText;
+
+    private void Awake()
+    {
+        parentStatManagerScript = Parent.GetComponent<StatManager>();
+        Slider = GetComponentInChildren<Slider>();
+    }
+    private void OnEnable()
+    {
+        if (parentStatManagerScript != null)
+        {
+            parentStatManagerScript.OnHealthChanged += UpdateHPSlider;
+        }
+    }
+    private void OnDisable()
+    {
+
+        if (parentStatManagerScript != null)
+        {
+            parentStatManagerScript.OnHealthChanged -= UpdateHPSlider;
+        }
+    }
+
     void Start()
     {
-       parentAttackScript = Parent.GetComponent<Attack>();
-       Slider = GetComponentInChildren<Slider>();
-        Transform foundDamagePopUpText = transform.Find("DamagePopUp");
-        if (foundDamagePopUpText != null)
-        {
-            damagePopUpText = foundDamagePopUpText.GetComponent<TextMeshPro>();
-        }
-        else Debug.Log("Cant Find Damage PopUp Text" + gameObject.name);
-
-
+      
+       
+       
+        
     }
 
     
     void Update()
     {
-        Slider.maxValue = parentAttackScript.maxHP;
-        Slider.minValue = 0;
-        Slider.value = parentAttackScript.currentHP;
+
     }
-    public IEnumerator DamagePopUp(float value)
+    private void UpdateHPSlider(float current, float max)
     {
-        if(damagePopUpText != null)
-        {
-            damagePopUpText.fontSize = 10;
-            damagePopUpText.text = value.ToString();
-            yield return new WaitForSeconds(1f);
+        Slider.maxValue = max;
+        Slider.minValue = 0;
+        Slider.value = current;
 
-            damagePopUpText.fontSize = 0;
-            
-
-
-
-        }
     }
+  
 }

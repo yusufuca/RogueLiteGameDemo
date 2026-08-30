@@ -3,22 +3,17 @@
 public class PlayerMovement : Movement
 {
     Attack playerAttack;
-    bool tapped;
-    int tapCount;
     float tapInterval = 0.2f;
     float lastTapTime = -1;
     float dashSpeedMultiplier = 3;
     float runMultiplier = 2;
-    float originaspeed;
-    public float mySpeed;
+   
     public bool isDashing;
     public Vector3 newTargetPos;
-    public float stamina;
     protected override void Start()
     {
-        Speed = mySpeed;
-        originaspeed = Speed;
-        currentStamina = stamina;
+        
+        
         playerAttack = GetComponent<Attack>();
         base.Start();
     }
@@ -31,8 +26,8 @@ public class PlayerMovement : Movement
         MovementKeys();
         base.Update();
         Dashing();
-        StaminaCheck();
-        animator.SetFloat("MoveSpeed", Speed);
+        Sprint();
+        animator.SetFloat("MoveSpeed", statManager.Speed);
     }
     protected override void MoveToPoisiton()
     {
@@ -61,7 +56,7 @@ public class PlayerMovement : Movement
         //float mvRL = Input.GetAxis("Horizontal") * Speed;
         // float mvFB = Input.GetAxis("Vertical") * Speed;
         Vector3 inputDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
-        Vector3 movement = new Vector3(inputDir.x * Speed, playerVelocity.y, inputDir.z * Speed);
+        Vector3 movement = new Vector3(inputDir.x * statManager.Speed, playerVelocity.y, inputDir.z * statManager.Speed);
         if (inputDir != Vector3.zero)
         {
             targetPos = transform.position;
@@ -76,7 +71,7 @@ public class PlayerMovement : Movement
     }
     private void Dashing()
     {
-        float dashSpeedMultiplier = 3;
+        
         if (CheckDoubleTapped(KeyCode.W))
         {
            
@@ -97,13 +92,13 @@ public class PlayerMovement : Movement
             {
                 targetPos = newTargetPos;
                 targetPos.y = transform.position.y;
-                Speed = originaspeed * dashSpeedMultiplier;
+                statManager.Speed = myData.movementStats.moveSpeed * dashSpeedMultiplier;
             }
             else
             {
                 targetPos = transform.position;
             
-                Speed = originaspeed;
+                statManager.Speed = myData.movementStats.moveSpeed;
 
                 isDashing = false;
                 animator.SetBool("isDashing", isDashing);
@@ -129,24 +124,9 @@ public class PlayerMovement : Movement
         return false;
     }
 
-    private void StaminaCheck()
+    private void Sprint()
     {
-        if (Input.GetKey(KeyCode.LeftShift) && currentStamina > 0)
-        {
-            
-            Speed = originaspeed * runMultiplier;
-            currentStamina -= Time.deltaTime * 5;
-          
-
-        }
-        else
-        {
-            Speed = originaspeed;
-            if (currentStamina < maxStamina)
-            {
-                currentStamina += Time.deltaTime * 5;
-              
-            }
-        }
+        bool isSprinting = Input.GetKey(KeyCode.LeftShift);
+        statManager.Sprint(isSprinting);
     }
 }

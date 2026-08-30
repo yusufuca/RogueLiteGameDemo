@@ -2,14 +2,17 @@ using UnityEngine;
 
 public class EnemyAttack : Attack
 {
-    public NPC_Types myData;
+   
     Detection detection;
+
+    private void OnEnable()
+    {
+    
+
+    }
     protected override void Start()
     {
         detection = GetComponent<Detection>();
-        currentHP = myData.HP;
-        base.maxHP = currentHP;
-        attackSpeed = myData.attackSpeed;
         base.Start();
 
     }
@@ -19,10 +22,7 @@ public class EnemyAttack : Attack
         AttackRequest();
         base.Update();
 
-        if(currentHP <= 0)
-        {
-            Destroy(gameObject);
-        }
+
     }
 
     protected override void AttackClosest()
@@ -40,4 +40,5 @@ public class EnemyAttack : Attack
             }
         }  
     }
+
 }

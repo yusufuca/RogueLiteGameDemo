@@ -1,34 +1,107 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UI_Manager : MonoBehaviour
 {
+
+
     public Image hpBar;
     public Image staminaBar;
     public GameObject player;
-    Attack playerAttackScript;
-    Movement movementScript;
+    [SerializeField] private StatManager statManager;
     public GameObject Container;
+    public GameObject perkTree;
+    public GameObject statPanel;
+    
+
     // skills
     public List<GameObject> skillContainer = new List<GameObject>();
   
     private List<Skills> playerSkills = new List<Skills>();
-    void Start()
+    CanvasGroup perkTreeGroup;
+    private void Awake()
     {
         player = GameObject.Find("Player");
-        playerAttackScript = player.GetComponent<Attack>();
-        movementScript = player.GetComponent<Movement>();
+        if (player != null)  statManager = player.GetComponent<StatManager>();
+
+        
+    }
+
+    private void OnEnable()
+    {
+        if (statManager != null)
+        {
+
+            statManager.OnHealthChanged += UpdateHPSlider;
+            statManager.OnStaminaChanged += UpdateStaminaSlider;
+
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (statManager != null)
+        {
+            statManager.OnHealthChanged -= UpdateHPSlider;
+            statManager.OnStaminaChanged -= UpdateStaminaSlider;
+
+        }
+    }
+
+    void Start()
+    {
+        perkTreeGroup = perkTree.GetComponent<CanvasGroup>();
+       
     }
 
     // Update is called once per frame
     void Update()
     {
-        hpBar.fillAmount = Mathf.Clamp01(playerAttackScript.currentHP / playerAttackScript.maxHP);
-        staminaBar.fillAmount = Mathf.Clamp01(movementScript.currentStamina / movementScript.maxStamina);
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (perkTreeGroup.alpha != 0)
+            {
+                perkTreeGroup.alpha = 0;
+                perkTreeGroup.blocksRaycasts = false;
+                perkTreeGroup.interactable = false;
+            }
+            else
+            {
+                perkTreeGroup.alpha = 1;
+                perkTreeGroup.blocksRaycasts = true;
+                perkTreeGroup.interactable = true;
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.BackQuote))
+        {
+            if(statPanel.activeSelf)
+            {
+                statPanel.SetActive(false);
+            }
+            else
+            {
+                statPanel.SetActive(true);
+            }
+        }
+
+       
+       
         UpdateSkillContainer();
+
+    }
+
+    private void UpdateHPSlider(float current, float max)
+    {
+        hpBar.fillAmount = Mathf.Clamp01(current / max);
+    }
+    private void UpdateStaminaSlider(float current, float max)
+    {
+        staminaBar.fillAmount = Mathf.Clamp01(current / max);
     }
     private void UpdateSkillContainer()
     {

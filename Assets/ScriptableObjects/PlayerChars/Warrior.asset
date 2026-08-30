@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 536af99f3d17cd94d8d6317ea30158e6, type: 3}
+  m_Name: Warrior
+  m_EditorClassIdentifier: Assembly-CSharp::Entity_Types
+  npcTypes: 1
+  economyStats:
+    startCoin: 99999
+    startSkillPoint: 99999
+  movementStats:
+    Stamina: 20
+    moveSpeed: 7
+    jumpHeight: 10
+    runMultiplier: 3
+  healthStats:
+    HP: 100
+    maxHealth: 100
+  attackStats:
+    damage: 10
+    attackSpeed: 2
+  prefab: {fileID: 5072796300454438740, guid: 400ae728cd9321e4bbb16ea4a7a91a4d, type: 3}

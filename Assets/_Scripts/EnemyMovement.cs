@@ -6,19 +6,15 @@ using UnityEngine;
 public class EnemyMovement : Movement
 {
 
-    GameObject player;
+   
     public Detection detection;
-    public NPC_Types myData;
     public float maxPatrolLength = 10f;
     public GameObject marker;
-    bool isMarkerSpawned = false;
+    
     public List<GameObject> markers = new List<GameObject>();
     protected override void Start()
     {
-        base.Start();
-      
-        Speed = myData.moveSpeed;
-        player = GameObject.FindGameObjectWithTag("Player");
+        base.Start();      
         detection = GetComponent<Detection>();
         targetPos = transform.position;
     }

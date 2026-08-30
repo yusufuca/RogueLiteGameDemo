@@ -4,21 +4,25 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    protected GameManager gm;
-    protected CharacterController charController;
-    protected Animator animator;
-    protected Vector3 targetPos;
-    protected float Speed = 5f;
-    protected Vector3 playerVelocity;
-    protected bool isGrounded;
-    public bool isMoving;
-    protected float gravityValue = -9.8f;
-    public float jumpHeight = 2f;
-    protected TextMeshPro debugText;
-    protected Vector3 lastPos;
-    public float maxStamina;
-    public float currentStamina;
-    Attack attackScript;
+    [Header("-----References-----")]
+    public Entity_Types myData;
+    [SerializeField] protected StatManager statManager;
+    [SerializeField] protected GameManager gm;
+    [SerializeField] protected Attack attackScript;
+    [SerializeField] protected CharacterController charController;
+    [SerializeField] protected Animator animator;
+    [SerializeField] protected TextMeshPro debugText;
+
+
+
+
+    [Header("-----Movement AI-----")]
+    [SerializeField] protected Vector3 playerVelocity;
+    [SerializeField] protected Vector3 targetPos;
+    [SerializeField] protected float gravityValue = -9.8f;
+    [SerializeField] protected bool isGrounded;
+    [SerializeField] public bool isMoving;
+    [SerializeField] protected Vector3 lastPos;
 
     private void Awake()
     {
@@ -28,12 +32,14 @@ public class Movement : MonoBehaviour
 
     protected virtual void Start()
     {
+
+      
+        targetPos = transform.position;
         gm = GameManager.gm;
+        statManager = GetComponent<StatManager>();
         charController = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
-        targetPos = transform.position;
         attackScript = GetComponent<Attack>();
-        maxStamina = currentStamina;
     }
 
 
@@ -57,7 +63,7 @@ public class Movement : MonoBehaviour
      
         if (isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
-            playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravityValue);
+            playerVelocity.y = Mathf.Sqrt(statManager.jumpHeight * -2f * gravityValue);
             animator.SetTrigger("Jump");
            
         }
@@ -77,7 +83,7 @@ public class Movement : MonoBehaviour
         if (distance > 0.5f)
         {
             Vector3 direction = (targetPos - transform.position).normalized;
-            finalDestination = direction * Speed;
+            finalDestination = direction * statManager.Speed;
             Vector3 lookDirection = new Vector3(direction.x, 0, direction.z);
             if (lookDirection != Vector3.zero)
             {

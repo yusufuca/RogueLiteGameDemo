@@ -45,6 +45,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1525676008688162297}
+  - component: {fileID: 1376488120182047617}
   - component: {fileID: 8874083968749978383}
   - component: {fileID: 4602121951695131095}
   - component: {fileID: 7230468414486898749}
@@ -74,6 +75,32 @@ Transform:
   - {fileID: 1901393646424364820}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1376488120182047617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2120988536416358569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2515b391ab2a4504eb82b6e4cb5f9de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StatManager
+  myData: {fileID: 11400000, guid: ba1bd06e45545134d9a4095c697cdb00, type: 2}
+  currentHP: 0
+  maxHP: 0
+  Speed: 0
+  jumpHeight: 0
+  maxStamina: 0
+  currentStamina: 0
+  mask:
+    serializedVersion: 2
+    m_Bits: 128
+  initialDamage: 0
+  currentDamage: 0
+  attackSpeed: 0
+  currentCoin: 0
 --- !u!143 &8874083968749978383
 CharacterController:
   m_ObjectHideFlags: 0
@@ -111,9 +138,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e444d7c71f0944f4d848bf6cd8595de6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  isMoving: 0
-  detection: {fileID: 0}
   myData: {fileID: 11400000, guid: ba1bd06e45545134d9a4095c697cdb00, type: 2}
+  statManager: {fileID: 0}
+  gm: {fileID: 0}
+  attackScript: {fileID: 0}
+  charController: {fileID: 0}
+  animator: {fileID: 0}
+  debugText: {fileID: 0}
+  playerVelocity: {x: 0, y: 0, z: 0}
+  targetPos: {x: 0, y: 0, z: 0}
+  gravityValue: -9.8
+  isGrounded: 0
+  isMoving: 0
+  lastPos: {x: 0, y: 0, z: 0}
+  detection: {fileID: 0}
   maxPatrolLength: 10
   marker: {fileID: 417303180041795355, guid: 250165e5f88be224c9033a9daa26daa5, type: 3}
   markers: []
@@ -148,22 +186,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2b710ba1caed624e87da07b6fc77ecc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttack
-  weapon: {fileID: 41072224757033613}
-  isTargetLocked: 0
+  debugText: {fileID: 0}
+  damagePopUpText: {fileID: 0}
+  statManager: {fileID: 0}
   movementScript: {fileID: 0}
-  mask:
-    serializedVersion: 2
-    m_Bits: 128
+  isAttacking: 0
+  comboTime: 0
+  initialComboTime: 2
+  attackCoolDown: 0.2
+  lastAttackTime: 0
+  attackCount: 0
+  isStunned: 0
+  weapon: {fileID: 41072224757033613}
+  closestEnemy: {fileID: 0}
   targetPos: {x: 0, y: 0, z: 0}
+  requestTargetPos: 0
+  isTargetLocked: 0
   overlapSphereRadius: 10
   canAttackClosest: 0
   isSelectedWithMouse: 0
-  requestTargetPos: 0
-  currentHP: 1.26
-  maxHP: 0
-  currentDamage: 0
   waitTime: 0
-  myData: {fileID: 11400000, guid: ba1bd06e45545134d9a4095c697cdb00, type: 2}
+  initialWaitTime: 5
 --- !u!1 &2706448315273334139
 GameObject:
   m_ObjectHideFlags: 0
@@ -555,7 +598,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharUIUpdater
   Parent: {fileID: 2120988536416358569}
-  parentAttackScript: {fileID: 0}
+  parentStatManagerScript: {fileID: 0}
   Slider: {fileID: 0}
   damagePopUpText: {fileID: 0}
 --- !u!1 &4597895663735264405

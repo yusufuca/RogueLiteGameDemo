@@ -11,7 +11,7 @@ public class SkillManager : MonoBehaviour
     
     Skills lastCastSkill;
     Animator animator;
-    Attack myAttackScript;
+    StatManager myStatManagerScript;
     float skillValue;
     public GameObject coolDownIcon;
     public GameObject durationBar;
@@ -19,7 +19,7 @@ public class SkillManager : MonoBehaviour
     private void Start()
     {
         animator = GetComponentInChildren<Animator>();
-        myAttackScript = GetComponent<Attack>();
+        myStatManagerScript = GetComponent<StatManager>();
         UI_Manager = FindAnyObjectByType<UI_Manager>();
     }
     public void Update()
@@ -139,7 +139,7 @@ public class SkillManager : MonoBehaviour
             case SkillTypes.Attack:
                 Debug.Log("Casting Attack Skill");
                 
-                myAttackScript.currentDamage *= skill.value;
+                myStatManagerScript.currentDamage *= skill.value;
                 break;
             case SkillTypes.Stun:
                 Debug.Log("Casting Stun Skill");
@@ -154,7 +154,7 @@ public class SkillManager : MonoBehaviour
             case SkillTypes.Attack:
                 Debug.Log("Removed Attack Buff");
 
-                myAttackScript.currentDamage /= skill.value;
+                myStatManagerScript.currentDamage /= skill.value;
                 break;
             case SkillTypes.Stun:
                 //Debug.Log("Casted Stun Skill");
@@ -164,7 +164,7 @@ public class SkillManager : MonoBehaviour
     public void StunSkill(Skills skill)
     {
         Collider closestEnemy = null;
-        Collider[] hittedEnemies = Physics.OverlapSphere(transform.position, 2f, myAttackScript.mask);
+        Collider[] hittedEnemies = Physics.OverlapSphere(transform.position, 2f, myStatManagerScript.mask);
         float closestDistance = Mathf.Infinity;
         if (hittedEnemies.Length > 0)
         {

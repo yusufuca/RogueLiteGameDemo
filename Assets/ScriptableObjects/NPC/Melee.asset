@@ -13,9 +13,19 @@ MonoBehaviour:
   m_Name: Melee
   m_EditorClassIdentifier: Assembly-CSharp::NPC_Types
   npcTypes: 1
-  HP: 100
-  moveSpeed: 2
-  damage: 3
-  maxHealth: 0
-  attackSpeed: 1
+  economyStats:
+    startCoin: 0
+    startSkillPoint: 0
+  movementStats:
+    Stamina: 10
+    moveSpeed: 3
+    jumpHeight: 10
+    runMultiplier: 0
+  healthStats:
+    HP: 100
+    maxHealth: 100
+  attackStats:
+    damage: 5
+    attackSpeed: 2
+  scoreValue: 200
   prefab: {fileID: 919132149155446097, guid: 5149abebc9751be42b3f90d300a9ac2a, type: 3}
