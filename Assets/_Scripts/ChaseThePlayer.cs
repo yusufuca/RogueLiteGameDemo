@@ -26,6 +26,15 @@ public class ChaseThePlayer : MonoBehaviour
     private float playerWeight;
     [SerializeField] private Vector2 mousePos;
 
+    [Header("Zoom Settings")]
+    [SerializeField] private float minZoom = 0.5f;   
+    [SerializeField] private float maxZoom = 2f;     
+    [SerializeField] private float zoomSensitivity = 2f;
+    [SerializeField] private float zoomSmoothTime = 0.1f;
+    [SerializeField] private float currentZoom = 1f;
+    private float targetZoom = 1f;
+    private float zoomVelocity;
+
     private float lookAheadX;
     private float lookAheadZ;
 
@@ -43,7 +52,7 @@ public class ChaseThePlayer : MonoBehaviour
     }
     private void Update()
     {
-
+        ScreenZoom();
         CalculateLookAhead();
     }
     void LateUpdate()
@@ -68,7 +77,7 @@ public class ChaseThePlayer : MonoBehaviour
 
 
 
-        lookAheadVector = new Vector3(lookAheadX, defaultY, lookAheadZ);
+        lookAheadVector = new Vector3(lookAheadX, defaultY * currentZoom, lookAheadZ * currentZoom);
 
 
 
@@ -102,6 +111,17 @@ public class ChaseThePlayer : MonoBehaviour
         }
         transform.eulerAngles = originalEuler;
         shakeVelocity = 0;
+    }
+    private void ScreenZoom()
+    {
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if(Mathf.Abs(scroll) > 0.01f)
+        {
+            targetZoom -= scroll * zoomSensitivity;
+            targetZoom = Mathf.Clamp(targetZoom, minZoom, maxZoom);
+        }
+        currentZoom = Mathf.SmoothDamp(currentZoom, targetZoom, ref zoomVelocity, zoomSmoothTime);
+    
     }
     
 }

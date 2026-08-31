@@ -1,9 +1,14 @@
+using System;
 using System.Reflection.Metadata;
 using TMPro;
 using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
+
+    public event Action<float> OnMoveSpeedChanged;
+
+
     [Header("-----References-----")]
     public Entity_Types myData;
     [SerializeField] protected StatManager statManager;
@@ -17,12 +22,18 @@ public class Movement : MonoBehaviour
 
 
     [Header("-----Movement AI-----")]
+    [SerializeField, Range(300f,1000f)] protected float acceleration = 500f;
     [SerializeField] protected Vector3 playerVelocity;
+    [SerializeField] protected float movementVelocity;
+    [SerializeField] protected float currentSpeed = 0;
     [SerializeField] protected Vector3 targetPos;
     [SerializeField] protected float gravityValue = -9.8f;
     [SerializeField] protected bool isGrounded;
     [SerializeField] public bool isMoving;
+    [SerializeField] protected bool isSprinting;
     [SerializeField] protected Vector3 lastPos;
+    [SerializeField] protected Vector3 moveDirection;
+    [SerializeField] protected bool isDashing;
 
     private void Awake()
     {
@@ -45,6 +56,8 @@ public class Movement : MonoBehaviour
 
     protected virtual void Update()
     {
+        isSprinting = Input.GetKey(KeyCode.LeftShift);
+        statManager.Sprint(isSprinting);
         if (attackScript.isStunned) return;
         if (gm.isDebugTextOpen && debugText != null)
         {
@@ -60,14 +73,9 @@ public class Movement : MonoBehaviour
                 playerVelocity.y = -2f;
             } 
         }
-     
-        if (isGrounded && Input.GetKeyDown(KeyCode.Space))
-        {
-            playerVelocity.y = Mathf.Sqrt(statManager.jumpHeight * -2f * gravityValue);
-            animator.SetTrigger("Jump");
-           
-        }
+
         playerVelocity.y += gravityValue * Time.deltaTime;
+        CalculateMoveDirection();
         MoveToPoisiton();
        
         AnimateChar();
@@ -75,33 +83,73 @@ public class Movement : MonoBehaviour
         animator.SetBool("isGrounded", isGrounded);
         animator.SetFloat("VerticalVelocity", playerVelocity.y);
     }
-    protected virtual void MoveToPoisiton()
+    protected virtual void CalculateMoveDirection()
     {
-  
-        float distance = Vector3.Distance(targetPos, transform.position);
-        Vector3 finalDestination = Vector3.zero;
-        if (distance > 0.5f)
+        Vector3 horizantalTargetPos = new Vector3(targetPos.x,0,targetPos.z);
+        Vector3 horizantalPos = new Vector3(transform.position.x,0,transform.position.z);
+        float distance = Vector3.Distance(horizantalPos, horizantalTargetPos);
+        if (distance > 0.5f) 
         {
             Vector3 direction = (targetPos - transform.position).normalized;
-            finalDestination = direction * statManager.Speed;
-            Vector3 lookDirection = new Vector3(direction.x, 0, direction.z);
+            direction.y = 0;
+            moveDirection = direction;
+        }
+        else 
+        {
+            moveDirection = Vector3.zero;
+        }
+    }
+    protected virtual void MoveToPoisiton()
+    {
+        float targetSpeed = statManager.Speed;
+        if (currentSpeed != statManager.Speed && moveDirection != Vector3.zero)
+        {
+            if (isSprinting && !statManager.isExhausted)
+            {
+                currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed * statManager.myData.movementStats.runMultiplier
+                    , ref movementVelocity, statManager.myData.movementStats.weight / acceleration);
+            }
+            else if (isDashing)
+            {
+                currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed * statManager.myData.movementStats.dashMultiplier
+                    , ref movementVelocity, statManager.myData.movementStats.weight / acceleration);
+                OnMoveSpeedChanged?.Invoke(currentSpeed);
+
+            }
+            else
+            {
+                currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed ,ref movementVelocity, statManager.myData.movementStats.weight / acceleration);
+            }
+                animator.SetFloat("MoveSpeed", currentSpeed);
+                OnMoveSpeedChanged?.Invoke(currentSpeed);
+        }
+        else
+        {
+            movementVelocity = 0;
+            currentSpeed = 0;
+            OnMoveSpeedChanged?.Invoke(currentSpeed);
+        }
+
+
+            Vector3 finalDestination = Vector3.zero;
+        if (moveDirection != Vector3.zero)
+        {
+            Vector3 lookDirection = new Vector3(moveDirection.x, 0, moveDirection.z);
             if (lookDirection != Vector3.zero)
             {
                 transform.forward = lookDirection;
             }
         }
-        
 
-        charController.Move(finalDestination *  Time.deltaTime);
-    }
-    
-    private void DetectFacing()
-    {
+        finalDestination = moveDirection * currentSpeed;
+        finalDestination.y = playerVelocity.y;  
+
+        charController.Move(finalDestination * Time.deltaTime);
         
     }
     protected virtual void AnimateChar()
     {
-        if (lastPos.x != transform.position.x || lastPos.z != transform.position.z) 
+        if (isGrounded && moveDirection != Vector3.zero) 
         {
             isMoving = true;
             animator.SetBool("isMoving" , true);

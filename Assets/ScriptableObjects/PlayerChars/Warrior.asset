@@ -18,9 +18,10 @@ MonoBehaviour:
     startSkillPoint: 99999
   movementStats:
     Stamina: 20
-    moveSpeed: 7
-    jumpHeight: 10
-    runMultiplier: 3
+    moveSpeed: 5
+    jumpHeight: 5
+    runMultiplier: 2
+    dashMultiplier: 1.5
     weight: 120
   healthStats:
     HP: 100

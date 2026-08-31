@@ -12,11 +12,13 @@ public struct TextStatUIBinding
 public class StatPanelManager : MonoBehaviour
 {
     [SerializeField] private StatManager statManager;
+    [SerializeField] private Movement movement;
     public List<TextStatUIBinding> statBindings = new List<TextStatUIBinding>();
     private Dictionary<StatTypes, TextMeshProUGUI> statTextMap = new Dictionary<StatTypes, TextMeshProUGUI>();
     private void Awake()
     {
         statManager = FindAnyObjectByType<StatManager>();
+        movement = FindAnyObjectByType<Movement>();
         foreach (var binding in statBindings)
         {
             if (binding.UIText != null && !statTextMap.ContainsKey(binding.statType))
@@ -29,7 +31,7 @@ public class StatPanelManager : MonoBehaviour
     {
         statManager.OnHealthChanged += UpdateHPStat;
         statManager.OnStaminaChanged += UpdateStaminaStat;
-        statManager.OnMoveSpeedChanged += UpdateMoveSpeedStat;
+        movement.OnMoveSpeedChanged += UpdateMoveSpeedStat;
         statManager.OnExhaustedStateChanged += UpdateExhaustedStat;
         statManager.OnDamageStatChanged += UpdateDamageStat;
         UpdateAllStats();
@@ -38,7 +40,7 @@ public class StatPanelManager : MonoBehaviour
     {
         statManager.OnHealthChanged -= UpdateHPStat;
         statManager.OnStaminaChanged -= UpdateStaminaStat;
-        statManager.OnMoveSpeedChanged -= UpdateMoveSpeedStat;
+        movement.OnMoveSpeedChanged -= UpdateMoveSpeedStat;
         statManager.OnExhaustedStateChanged -= UpdateExhaustedStat;
         statManager.OnDamageStatChanged -= UpdateDamageStat;
     }
@@ -60,16 +62,16 @@ public class StatPanelManager : MonoBehaviour
     }
     private void UpdateHPStat(float current, float max)
     {
-        SetStatText(StatTypes.currentHP, "CurrentHP: "+ current + "/" + max);
+        SetStatText(StatTypes.currentHP, "CurrentHP: "+ current + " / " + max);
         SetStatText(StatTypes.maxHP,"MaxHP: " + max);   
     }
     private void UpdateStaminaStat(float current, float max)
     {
-        SetStatText(StatTypes.currentStamina, "Stamina: " +  (int)current + "/" + max);
+        SetStatText(StatTypes.currentStamina, "Stamina: " +  (int)current +  " / " + max);
     }
     private void UpdateMoveSpeedStat(float current)
     {
-       SetStatText(StatTypes.Speed, "MovementSpeed: " + current);
+       SetStatText(StatTypes.Speed, "MovementSpeed: " + (int)current + " / " +  statManager.myData.movementStats.moveSpeed);
     }
     private void UpdateExhaustedStat(bool isExhausted)
     {

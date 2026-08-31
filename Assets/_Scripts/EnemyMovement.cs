@@ -23,26 +23,20 @@ public class EnemyMovement : Movement
         base.Update();
         PatrolAreaPrep();
     }
-    protected override void MoveToPoisiton()
+    protected override void CalculateMoveDirection()
     {
-
         detection.DetectPlayer();
         if (detection.isRayHitPlayer)
         {
-            
+
             targetPos = detection.targetPos;
         }
         else
         {
-            //EnemyPatrol();
+            EnemyPatrol();
         }
-        
-   
-        base.MoveToPoisiton();
-        Vector3 gravityMovement = new Vector3(0, playerVelocity.y, 0);
-        charController.Move(gravityMovement * Time.deltaTime);
+        base.CalculateMoveDirection();
     }
-
 
     public void EnemyPatrol()
     {

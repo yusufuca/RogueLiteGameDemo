@@ -28,6 +28,7 @@ public class StatManager : MonoBehaviour
     [Header("-----REFERENCES-----")]
     public Entity_Types myData;
     public PerkTreeManager perkTreeManager;
+    public PlayerMovement movement;
 
     [Header("-----HP STATS-----")]
     public float currentHP;
@@ -39,6 +40,7 @@ public class StatManager : MonoBehaviour
     public float maxStamina;
     public float currentStamina;
     public bool isExhausted;
+    public int dashStaminaCost;
 
     [Header("-----COMBAT-----")]
     public LayerMask mask;
@@ -51,14 +53,17 @@ public class StatManager : MonoBehaviour
     private void Awake()
     {
         perkTreeManager = FindFirstObjectByType<PerkTreeManager>();
+        movement = FindAnyObjectByType<PlayerMovement>();
     }
     private void OnEnable()
     {
        perkTreeManager.OnPerkAdded += AddPerk;
+        movement.OnDashing += Dashing;
     }
     private void OnDisable()
     {
         perkTreeManager.OnPerkAdded -= AddPerk;
+        movement.OnDashing -= Dashing;
     }
     private void Start()
     {
@@ -103,7 +108,6 @@ public class StatManager : MonoBehaviour
         {
             if (!isExhausted)
             {
-                Speed = myData.movementStats.moveSpeed * myData.movementStats.runMultiplier;
                 currentStamina -= Time.deltaTime * 5;
                 if (currentStamina <= 0)
                 {
@@ -113,7 +117,6 @@ public class StatManager : MonoBehaviour
             }
             else
             {
-                Speed = myData.movementStats.moveSpeed;
                 currentStamina += Time.deltaTime * 5;
 
                 if (currentStamina >= maxStamina * 0.20f)
@@ -124,7 +127,6 @@ public class StatManager : MonoBehaviour
         }
         else
         {
-            Speed = myData.movementStats.moveSpeed;
             if (currentStamina < maxStamina)
             {
                 currentStamina += Time.deltaTime * 5;
@@ -136,8 +138,12 @@ public class StatManager : MonoBehaviour
             }
         }
         OnStaminaChanged?.Invoke(currentStamina, maxStamina);
-        OnMoveSpeedChanged?.Invoke(Speed);
         OnExhaustedStateChanged?.Invoke(isExhausted);
+    }
+    public void Dashing()
+    {
+        currentStamina -= dashStaminaCost;
+        OnStaminaChanged?.Invoke(currentStamina,maxStamina);
     }
     public void AddPerk(Perk_SO perk)
     {

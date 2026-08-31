@@ -1,16 +1,17 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerMovement : Movement
 {
+    public event Action OnDashing;
+
     Attack playerAttack;
     float tapInterval = 0.2f;
     float lastTapTime = -1;
-    float dashSpeedMultiplier = 3;
-    float runMultiplier = 2;
-   
-    public bool isDashing;
+    [SerializeField] private float dashDuration;
     public Vector3 newTargetPos;
+    private KeyCode lastPressedKey = KeyCode.None;
     protected override void Start()
     {
         
@@ -22,113 +23,104 @@ public class PlayerMovement : Movement
    
     protected override void Update()
     {
-       
-        
-        MovementKeys();
         base.Update();
+        Jump();
         Dashing();
-        Sprint();
-        animator.SetFloat("MoveSpeed", statManager.Speed);
     }
-    protected override void MoveToPoisiton()
+    protected override void CalculateMoveDirection()
     {
-       
+        Vector3 inputDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
+
+        if (inputDir != Vector3.zero)
+        {
+            targetPos = transform.position;
+            moveDirection = inputDir;
+            playerAttack.isTargetLocked = false;
+            return;
+        }
+        else
+        {
+            moveDirection = Vector3.zero;
+        }
         if (Input.GetMouseButtonDown(1))
         {
+
             playerAttack.isTargetLocked = false;
             RaycastHit hit;
             Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit);
             targetPos = hit.point;
             targetPos.y = 0;
         }
-        
-        if(playerAttack.isTargetLocked || playerAttack.requestTargetPos) 
+
+        if (playerAttack.isTargetLocked || playerAttack.requestTargetPos)
         {
             targetPos = playerAttack.targetPos;
             Debug.Log("Player Moving To Enemy");
         }
- 
-        base.MoveToPoisiton();
 
+
+        base.CalculateMoveDirection();
     }
-    private void MovementKeys()
+    private void Jump()
     {
-        // if (isDashing) return;
-        //float mvRL = Input.GetAxis("Horizontal") * Speed;
-        // float mvFB = Input.GetAxis("Vertical") * Speed;
-        Vector3 inputDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
-        Vector3 movement = new Vector3(inputDir.x * statManager.Speed, playerVelocity.y, inputDir.z * statManager.Speed);
-        if (inputDir != Vector3.zero)
+        if (isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
-            targetPos = transform.position;
-            Vector3 lookDirection = new Vector3(inputDir.x, 0, inputDir.z);
-            transform.forward = lookDirection;
-            playerAttack.isTargetLocked = false;
+            playerVelocity.y = Mathf.Sqrt(statManager.jumpHeight * -2f * gravityValue);
+            animator.SetTrigger("Jump");
+
         }
 
-        charController.Move(movement * Time.deltaTime);
-    
-
     }
+
     private void Dashing()
     {
-        
-        if (CheckDoubleTapped(KeyCode.W))
+        KeyCode[] keyCodes = {KeyCode.W,KeyCode.A,KeyCode.S,KeyCode.D};
+        if (!isDashing && statManager.currentStamina > statManager.dashStaminaCost)
         {
-           
-            // Roll Anim
-            //Debug.LogWarning("DoubleTappedW");
-            animator.SetTrigger("Dash");
-            isDashing = true;
-            animator.SetBool("isDashing", isDashing);
-            
-
-
-        }
-        if (isDashing)
-        {
-
-
-            if (Vector3.Distance(newTargetPos, transform.position) > 0.6f)
+            for (int i = 0; i < keyCodes.Length; i++)
             {
-                targetPos = newTargetPos;
-                targetPos.y = transform.position.y;
-                statManager.Speed = myData.movementStats.moveSpeed * dashSpeedMultiplier;
+                if (CheckDoubleTapped(keyCodes[i]))
+                {
+                    OnDashing?.Invoke();
+                    StartCoroutine(DashRoutine());
+                }
             }
-            else
+            if (Input.GetKeyDown(KeyCode.F))
             {
-                targetPos = transform.position;
-            
-                statManager.Speed = myData.movementStats.moveSpeed;
-
-                isDashing = false;
-                animator.SetBool("isDashing", isDashing);
+                OnDashing?.Invoke();
+                StartCoroutine(DashRoutine());
             }
         }
+    }
+    private IEnumerator DashRoutine()
+    {
+        isDashing = true;
+        animator.SetTrigger("Dash");
+        animator.SetBool("isDashing", isDashing);
+        yield return new WaitForSeconds(dashDuration);
+        isDashing = false;
+        animator.SetBool("isDashing", isDashing );
     }
     private bool CheckDoubleTapped(KeyCode x)
     {
       
         if (Input.GetKeyDown(x))
         {
-            if (Time.time - lastTapTime < tapInterval)
+            if (lastPressedKey == x && Time.time - lastTapTime < tapInterval)
             {
                 lastTapTime = -1f;
-                newTargetPos = transform.position + transform.forward * 20;
+                lastPressedKey = KeyCode.None;
                 return true;
             }
             else
             {
+                lastPressedKey = x;
                 lastTapTime = Time.time;
             }
         }
         return false;
     }
 
-    private void Sprint()
-    {
-        bool isSprinting = Input.GetKey(KeyCode.LeftShift);
-        statManager.Sprint(isSprinting);
-    }
+
 
 }
