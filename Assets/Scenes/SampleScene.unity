@@ -1016,7 +1016,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
-  m_LocalPosition: {x: 0, y: 10, z: -14}
+  m_LocalPosition: {x: 0, y: 10, z: -9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1079,6 +1079,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChaseThePlayer
   playerTransform: {fileID: 244063452}
+  player: {fileID: 244063451}
+  maxLookAheadX: 6
+  maxLookAheadY: 4
+  chaseSpeed: 0.2
+  minCenterDistance: 0.5
+  defaultX: 0
+  defaultZ: -9
+  defaultY: 10
+  shakeMultiplier: 2
+  shakeSpeed: 0.05
+  mousePos: {x: 0, y: 0}
 --- !u!1 &331546885
 GameObject:
   m_ObjectHideFlags: 0
@@ -5015,7 +5026,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1846730516
 RectTransform:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class PlayerMovement : Movement
 {
@@ -129,4 +130,5 @@ public class PlayerMovement : Movement
         bool isSprinting = Input.GetKey(KeyCode.LeftShift);
         statManager.Sprint(isSprinting);
     }
+
 }

@@ -31,6 +31,7 @@ public class Entity_Types : ScriptableObject
         public float moveSpeed;
         public float jumpHeight;
         public float runMultiplier;
+        public float weight;
     }
     [System.Serializable]
     public struct EconomyStats

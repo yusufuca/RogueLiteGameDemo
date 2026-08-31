@@ -413,7 +413,6 @@ MonoBehaviour:
   Parent: {fileID: 5072796300454438740}
   parentStatManagerScript: {fileID: 0}
   Slider: {fileID: 0}
-  damagePopUpText: {fileID: 0}
 --- !u!1 &1823582748620150350
 GameObject:
   m_ObjectHideFlags: 0
@@ -1202,12 +1201,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StatManager
   myData: {fileID: 11400000, guid: 9ddb0894f78d4de4289076e74e2c2098, type: 2}
+  perkTreeManager: {fileID: 0}
   currentHP: 0
   maxHP: 0
   Speed: 0
   jumpHeight: 0
   maxStamina: 0
   currentStamina: 0
+  isExhausted: 0
   mask:
     serializedVersion: 2
     m_Bits: 64
@@ -1329,6 +1330,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9179522640392478275}
   - component: {fileID: 5525253144046501174}
+  - component: {fileID: 5686006847661587653}
   m_Layer: 7
   m_Name: warriorTank
   m_TagString: Untagged
@@ -1375,6 +1377,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5686006847661587653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5123109833482236054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a050b5652b39fd4da1900cdeb10ed93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimEvents
 --- !u!1 &5164913497721776201
 GameObject:
   m_ObjectHideFlags: 0
