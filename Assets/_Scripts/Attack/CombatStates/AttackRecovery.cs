@@ -16,10 +16,6 @@ public class AttackRecovery : BaseCombatState
             attackScript.animator.speed = 1;
             attackScript.StateChanger(new AttackIdleState());
         }
-        else
-        {
-            attackScript.animator.speed = 0.25f;
-        }
     }
     public override void ExitState(Attack attackScript)
     {

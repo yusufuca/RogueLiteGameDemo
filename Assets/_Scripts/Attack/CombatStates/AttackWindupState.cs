@@ -20,6 +20,11 @@ public class AttackWindupState : BaseCombatState
         {
             attackScript.animator.speed = 0.25f;
         }
+        if(!attackScript.attackRequest && !attackScript.cast1Request && !attackScript.cast2Request)
+        {
+            attackScript.animator.speed = 1f;
+            attackScript.StateChanger(new AttackIdleState());
+        }
     }
     public override void ExitState(Attack attackScript)
     {
