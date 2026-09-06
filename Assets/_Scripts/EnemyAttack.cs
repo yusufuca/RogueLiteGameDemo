@@ -2,43 +2,40 @@ using UnityEngine;
 
 public class EnemyAttack : Attack
 {
-   
     Detection detection;
-
-    private void OnEnable()
-    {
-    
-
-    }
+    [SerializeField] private float DistanceToPlayer; 
     protected override void Start()
     {
         detection = GetComponent<Detection>();
         base.Start();
-
     }
     protected override void Update()
     {
+        DistanceToPlayer = Vector3.Distance(transform.position, detection.player.transform.position);
         if (isStunned) return;
         AttackRequest();
         base.Update();
-
-
     }
-
-    protected override void AttackClosest()
-    {
-        
-    }
-    public void AttackRequest()
+    /*public void AttackRequest()
     {
         if (detection.isRayHitPlayer)
         {
             if (detection.detectedCollider != null)
             {
                 isTargetLocked = true;
-                base.AttackRequest(detection.detectedCollider);
+                base.AttackRequested(detection.detectedCollider);
             }
         }  
+    }*/
+    private void AttackRequest()
+    {
+        if (detection.isPlayerDetected && DistanceToPlayer < statManager.myData.attackStats.attackRange)
+        {
+            base.AttackRequested();
+        }
+        if (attackRequest && DistanceToPlayer > statManager.myData.attackStats.attackRange)
+        {
+            StateChanger(new AttackIdleState());
+        }
     }
-
 }

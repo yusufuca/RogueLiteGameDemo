@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 238770c1dd1f6c546a4361dbe0ebe5a6, type: 3}
+  m_Name: AutoAttack
+  m_EditorClassIdentifier: Assembly-CSharp::Skills
+  skillTpye: 1
+  value: 10
+  coolDown: 0.25
+  isContinous: 0
+  duration: 0
+  suggestedClass: 0
+  classMultiplier: 0
+  animTriggerString: Attack
+  imagePrefab: {fileID: 8225994841279680838, guid: 2ec88b736cca37c4cbff72a2fad8167e, type: 3}

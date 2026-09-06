@@ -3,25 +3,25 @@ using UnityEngine;
 public class Detection : MonoBehaviour
 {
     public GameObject player;
-
     public float visionDistance = 10;
     public float visionAngle = 45f;
-    public int maxRayCount = 5;
-    public bool isRayHitPlayer = false;
+    [SerializeField] private float distanceToPlayer;
+    [SerializeField] private float angleToPlayer;
+    [SerializeField] private Attack attackScript;
+    Color rayColor;
+    public bool isPlayerDetected;
     public Vector3 targetPos;
-    LayerMask layerMask;
-    public Collider detectedCollider;
+    private float lastDetectedTime;
+    [SerializeField] private float detectionCoolDown = 5;
+    private void Awake()
+    {
+        attackScript = GetComponent<Attack>();
+    }
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
+        player = GameManager.gm.Player;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-    public void DetectPlayer()
+    /*public void DetectPlayer()
     {
   
         RaycastHit hit;
@@ -55,7 +55,49 @@ public class Detection : MonoBehaviour
             }
         }
        
+    }*/
+
+    public void DetectPlayer()
+    {
+        distanceToPlayer = Vector3.Distance(player.transform.position,transform.position);
+        //angleToPlayer = Vector3.Dot(transform.TransformDirection(Vector3.forward),Vector3.Normalize(player.transform.position - transform.position));
+        angleToPlayer = Vector3.Angle(player.transform.position - transform.position, transform.forward);
+
+        Vector3 leftRayDirection = Quaternion.Euler(0, -visionAngle, 0) * transform.forward;
+        Vector3 rightRayDirection = Quaternion.Euler(0, visionAngle, 0) * transform.forward;
+        Vector3 rayOrigin = transform.position + (Vector3.up * 1.5f);
+
+        Debug.DrawRay(rayOrigin, leftRayDirection * visionDistance, rayColor, 0, false);
+        Debug.DrawRay(rayOrigin, rightRayDirection * visionDistance, rayColor, 0, false);
+
+        if (distanceToPlayer < visionDistance) 
+        {
+            if (angleToPlayer < visionAngle || attackScript.hitted)
+            {
+                isPlayerDetected = true;
+                targetPos = player.transform.position;
+                rayColor = Color.green;
+                lastDetectedTime = Time.time;
+            }
+            else
+            {
+                if (Time.time - lastDetectedTime < detectionCoolDown && !isPlayerDetected)
+                {
+                    isPlayerDetected = true;
+                    targetPos = player.transform.position;
+                    rayColor = Color.green;
+                }
+                else
+                {
+                    isPlayerDetected = false;
+                    rayColor = Color.blue;
+                }
+            }
+        }
+        else
+        {
+            isPlayerDetected = false;
+            rayColor = Color.blue;
+        }
     }
-
-
 }

@@ -20,12 +20,15 @@ MonoBehaviour:
     Stamina: 10
     moveSpeed: 3
     jumpHeight: 10
-    runMultiplier: 0
+    runMultiplier: 2
+    dashMultiplier: 2
+    weight: 60
   healthStats:
     HP: 100
     maxHealth: 100
   attackStats:
     damage: 5
-    attackSpeed: 2
+    attackSpeed: 0.5
+    attackRange: 1.2
   scoreValue: 200
   prefab: {fileID: 919132149155446097, guid: 5149abebc9751be42b3f90d300a9ac2a, type: 3}

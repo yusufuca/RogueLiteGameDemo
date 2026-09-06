@@ -29,20 +29,6 @@ public class CharUIUpdater : MonoBehaviour
             parentStatManagerScript.OnHealthChanged -= UpdateHPSlider;
         }
     }
-
-    void Start()
-    {
-      
-       
-       
-        
-    }
-
-    
-    void Update()
-    {
-
-    }
     private void UpdateHPSlider(float current, float max)
     {
         Slider.maxValue = max;

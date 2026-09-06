@@ -1,34 +1,44 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Reflection.Metadata;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.ProBuilder.MeshOperations;
+using UnityEngine.UIElements;
 
 public class Attack : MonoBehaviour, IDamagable
 {
     [Header("-----REFERENCES-----")]
     [SerializeField] protected TextMeshPro debugText;
     [SerializeField] protected TextMeshPro damagePopUpText;
-    [SerializeField] protected StatManager statManager;
-    protected Animator animator;
+    public StatManager statManager;
+    public SkillManager skillManager;
+    public Animator animator;
     public Movement movementScript;
+    public SkinnedMeshRenderer skinnedMeshRenderer;
 
 
-    [SerializeField] protected bool isAttacking = false;
+    public bool isAttacking = false;
     public float comboTime;
     public float initialComboTime = 2;
     public float attackCoolDown = 0.2f;
     public float lastAttackTime;
-    [SerializeField] private int attackCount;
+    public int attackCount;
     public bool isStunned;
 
     [Header("-----WEAPON-----")]
     public GameObject weapon;
-
+    public TrailRenderer weaponTrail;
+    public float weaponDamage;
+    public HashSet<IDamagable> hittedEnemies = new HashSet<IDamagable>();
+    public LayerMask enemyLayerMask;
+    public TextMeshPro attackStateDebugText;
     [Header("-----TARGET & AI LOGICS-----")]
-    [SerializeField] Collider closestEnemy = null;
+    public Material flashMaterial;
+    public Material originalMat;
+    public bool canTurnMousePos;
     public Vector3 targetPos;
     public bool requestTargetPos;
     public bool isTargetLocked;
@@ -36,65 +46,56 @@ public class Attack : MonoBehaviour, IDamagable
     public bool canAttackClosest;
     public bool isSelectedWithMouse;
     public float waitTime;
-    [SerializeField] private float initialWaitTime = 5;
-  
+    public bool attackRequest = false;
+    public bool cast1Request = false;
+    public bool cast2Request = false;
+    public bool hitted;
+    public GameObject hitImpactPrefab;
+    public float currentStateCurrentTime;
+    bool upscaled;
 
-    protected virtual void Start()
+    [SerializeField] private float initialWaitTime = 5;
+
+    public BaseCombatState currentCombatState;
+    private void Awake()
     {
         statManager = GetComponent<StatManager>();
         animator = GetComponentInChildren<Animator>();
         movementScript = GetComponent<Movement>();
-        Transform foundDebugText = transform.Find("DebugText");
-        if (foundDebugText != null)
-        {
-            debugText = foundDebugText.GetComponent<TextMeshPro>();
-        }
-        else Debug.Log("Cant Find Debug Text" + gameObject.name);
-
-        Transform foundDamagePopUpText = transform.Find("DamagePopUp");
-        if (foundDamagePopUpText != null)
-        {
-            damagePopUpText = foundDamagePopUpText.GetComponent<TextMeshPro>();
-        }
-        else Debug.Log("Cant Find Damage PopUp Text" + gameObject.name);
+        skillManager = GetComponentInChildren<SkillManager>();
+        debugText = GetComponent<TextMeshPro>();
+        weaponDamage = weapon.GetComponent<Weapon>().damage;
+        weaponTrail = weapon.GetComponentInChildren<TrailRenderer>();
+        skinnedMeshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+    }
+    protected virtual void Start()
+    {
         waitTime = initialWaitTime;
         comboTime = initialComboTime;
-        
+        currentCombatState = new AttackIdleState();
+        currentCombatState.EnterState(this);
     }
 
     protected virtual void Update()
     {
-        if (isStunned) return;
-        if (weapon != null)
-        {
-            if (animator.GetCurrentAnimatorStateInfo(0).IsTag("Attacking"))
-            {
-                weapon.GetComponent<BoxCollider>().enabled = true;
-                Debug.Log("PlayerAttacking");
-                isAttacking = true;
-            }
-            else
-            {
-                //Debug.Log("Buggy");
-                weapon.GetComponent<BoxCollider>().enabled = false;
-                isAttacking = false;
-                weapon.GetComponent<Weapon>().damageGiven = false;
-            }
-        }
-        else 
-        {
-            Debug.Log("weapon is null"); 
-        }
-
-   
-        AttackClosest();
-
-        debugText.text = ("Attack Count: " + attackCount);
+        ComboTimer();
+        CalculateComboDamage();
+        CurrentAnimationTime();
+        currentCombatState.UpdateState(this);
+    }
+    public void StateChanger(BaseCombatState newState)
+    {
+        currentCombatState.ExitState(this);
+        currentCombatState = newState;
+        currentCombatState.EnterState(this);
+    }
+    public virtual void ComboTimer()
+    {
         float timer = Time.deltaTime;
         comboTime -= timer;
         if (attackCount > 0)
         {
-            if (comboTime <= 0 || movementScript.isMoving)
+            if (comboTime <= 0)
             {
                 attackCount = 0;
                 comboTime = initialComboTime;
@@ -102,32 +103,13 @@ public class Attack : MonoBehaviour, IDamagable
         }
         else
         {
-            comboTime = initialComboTime;   
+            comboTime = initialComboTime;
         }
         animator.SetFloat("AttackCount", attackCount);
         animator.SetFloat("AttackSpeed", statManager.attackSpeed);
-        CalculateComboDamage();
     }
-    
 
-    protected virtual void Attacking()
-    {
-        if (isAttacking) return;
-        if (Time.time - lastAttackTime < attackCoolDown) return;
-        lastAttackTime = Time.time;
-        attackCount++;
-       
-       
-        
-        if(attackCount > 3)
-        {
-            attackCount = 1;
-        }
-        comboTime = initialComboTime;
-        animator.SetFloat("AttackCount", attackCount);
-        animator.SetTrigger("Attack");
 
-    }
     protected virtual void CalculateComboDamage()
     {
         switch (attackCount)
@@ -149,102 +131,85 @@ public class Attack : MonoBehaviour, IDamagable
         if (statManager != null)
         {
             statManager.ApplyDamage(damage);
+            hitted = true;
+        }
+    }
+
+    public void AttackRequested()
+    {
+        if (!attackRequest)
+        {
+            attackRequest = true;
+            attackCount++;
+            if (attackCount > 3)
+            {
+                attackCount = 1;
+            }
+            animator.SetFloat("AttackCount", attackCount);
+            if (skillManager.mySkills != null)
+            {
+                skillManager.CastSkill(skillManager.mySkills[2]);
+            }
+        }
+    }
+    public void Cast1Requested()
+    {
+        cast1Request = true;
+        skillManager.CastSkill(skillManager.mySkills[0]);
+    }
+    public void Cast2Requested()
+    {
+        cast2Request = true;
+        skillManager.CastSkill(skillManager.mySkills[1]);
+    }
+    public Vector3 Mousepos()
+    {
+        RaycastHit hit;
+        Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit);
+        Vector3 mousepos = (hit.point - transform.position).normalized;
+        mousepos.y = 0;
+        return mousepos;
+    }
+    public virtual void CurrentAnimationTime()
+    {
+        AnimatorStateInfo currentStateInfo = animator.GetCurrentAnimatorStateInfo(1);
+        if (currentStateInfo.IsTag("Attacking"))
+        {
+            currentStateCurrentTime = currentStateInfo.normalizedTime % 1f;
+        }
+    }
+    public void TriggerHitStop(float duration)
+    {
+        StartCoroutine(HitStopRoutine(duration));
+        Vector3 hitDirection = (transform.position - transform.forward).normalized;
+        if (hitImpactPrefab != null)
+        {
+            Quaternion impactRotation = Quaternion.LookRotation(hitDirection);
+            Object.Instantiate(hitImpactPrefab, transform.position, impactRotation);
+        }
+    }
+
+    private IEnumerator HitStopRoutine(float duration)
+    {
+       
+        animator.speed = 0;
+        transform.localScale *= 1.2f;
+        upscaled = true;
+        skinnedMeshRenderer.sharedMaterial = flashMaterial;
+        float originalSpeed = GetComponent<Movement>().currentSpeed;
+        yield return new WaitForSecondsRealtime(duration);
+        if (animator != null)
+        {
+            InitializeHitStop();
         }
 
     }
-    protected virtual void AttackClosest() 
+    public void InitializeHitStop()
     {
-        Collider[] nearEnemies = Physics.OverlapSphere(transform.position, overlapSphereRadius, statManager.mask);
-        
-        
-        float closestDistance = Mathf.Infinity;
-        if (nearEnemies.Length > 0)
-        {
-            //Debug.Log("there is " + nearEnemies.Length + (" enemy"));
-            for(int i = 0; i < nearEnemies.Length; i++)
-            {
-                Collider c = nearEnemies[i];
-                float distance = Vector3.Distance(c.transform.position,transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestEnemy = c;
-                    //Debug.Log("enemy is " + c.name);
-                }
-             
-            }
-
-        }
-        else
-        {
-            closestEnemy = null;
-            //Debug.Log("Cant Detect Anyone");
-        }
-        float timer = Time.deltaTime;
-        waitTime -= timer;
-        if (closestEnemy != null && !isAttacking && !isSelectedWithMouse && !movementScript.isMoving)
-        {
-          
-            
-            
-            if (waitTime < 0)
-            {
-                isTargetLocked = true;
-                AttackRequest(closestEnemy);
-             
-            }
-
-
-
-        }
-       
-        if (movementScript.isMoving && !isTargetLocked)
-        {
-            waitTime = initialWaitTime;
-        }
-
-
-    }
-    protected virtual void AttackRequest(Collider enemy)
-    {
-       
-        if (enemy != null)
-        {
-            Debug.Log(gameObject.name + " Attack requested to " + enemy.gameObject.name);
-            if (isTargetLocked)
-            {
-                float distance = Vector3.Distance(transform.position, enemy.gameObject.transform.position);
-                debugText.text = distance.ToString();
-
-                if (distance < 2f)
-                {
-                    requestTargetPos = false;
-                    targetPos = transform.position;
-
-                    Attacking();
-                   
-                        isTargetLocked = false;
-                        isSelectedWithMouse = false;
-                    
-                    
-                }
-                else
-                {
-                    if (enemy.gameObject == null || movementScript.isMoving)
-                    {
-                        targetPos = transform.position;
-                    }
-                    requestTargetPos = true;
-                    targetPos = enemy.gameObject.transform.position;
-                    
-                }
-            }
-        }
-        else
-        {
-            Debug.Log("Enemy is null from AttackRequested");
-        }
-   
+        skinnedMeshRenderer.sharedMaterial = originalMat;
+        animator.speed = 1f;
+        hitted = false;
+        if (upscaled) transform.localScale /= 1.2f;
     }
     private void OnDrawGizmos()
     {

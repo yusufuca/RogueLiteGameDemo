@@ -28,7 +28,8 @@ public class StatManager : MonoBehaviour
     [Header("-----REFERENCES-----")]
     public Entity_Types myData;
     public PerkTreeManager perkTreeManager;
-    public PlayerMovement movement;
+    public Movement movement;
+    public Attack attackScript;
 
     [Header("-----HP STATS-----")]
     public float currentHP;
@@ -53,19 +54,26 @@ public class StatManager : MonoBehaviour
     private void Awake()
     {
         perkTreeManager = FindFirstObjectByType<PerkTreeManager>();
-        movement = FindAnyObjectByType<PlayerMovement>();
+        movement = GetComponent<Movement>();
+        attackScript = GetComponent<Attack>();
+
     }
     private void OnEnable()
     {
-       perkTreeManager.OnPerkAdded += AddPerk;
-        movement.OnDashing += Dashing;
+        perkTreeManager.OnPerkAdded += AddPerk;
+        
+        if (movement != null) movement.OnDashing += Dashing;
     }
     private void OnDisable()
     {
         perkTreeManager.OnPerkAdded -= AddPerk;
-        movement.OnDashing -= Dashing;
+        if (movement != null) movement.OnDashing -= Dashing;
     }
     private void Start()
+    {
+        InitializeEntity();
+    }
+    private void InitializeEntity()
     {
         // HP STATS
 
@@ -89,8 +97,15 @@ public class StatManager : MonoBehaviour
 
         OnHealthChanged?.Invoke(currentHP, maxHP);
 
-    }
 
+        attackScript.currentCombatState = new AttackIdleState();
+        attackScript.currentCombatState.EnterState(attackScript);
+        attackScript.StopAllCoroutines();
+        attackScript.InitializeHitStop();
+        movement.currentMovementState = new IdleState();
+        movement.currentMovementState.EnterState(movement);
+        movement.StopAllCoroutines();
+    }
     public void ApplyDamage(float damage)
     {
         currentHP -= damage;
@@ -104,42 +119,10 @@ public class StatManager : MonoBehaviour
     }
     public void Sprint(bool isSprinting)
     {
-        if (isSprinting)
-        {
-            if (!isExhausted)
-            {
-                currentStamina -= Time.deltaTime * 5;
-                if (currentStamina <= 0)
-                {
-                    currentStamina = 0;
-                    isExhausted = true;
-                }
-            }
-            else
-            {
-                currentStamina += Time.deltaTime * 5;
-
-                if (currentStamina >= maxStamina * 0.20f)
-                {
-                    isExhausted = false;
-                }
-            }
-        }
-        else
-        {
-            if (currentStamina < maxStamina)
-            {
-                currentStamina += Time.deltaTime * 5;
-
-            }
-            if (isExhausted && currentStamina >= maxStamina * 0.20f)
-            {
-                isExhausted = false;
-            }
-        }
-        OnStaminaChanged?.Invoke(currentStamina, maxStamina);
-        OnExhaustedStateChanged?.Invoke(isExhausted);
+        OnStaminaChanged?.Invoke(currentStamina,maxStamina);
+        OnExhaustedStateChanged?.Invoke(movement.statManager.isExhausted);
     }
+
     public void Dashing()
     {
         currentStamina -= dashStaminaCost;
@@ -165,9 +148,8 @@ public class StatManager : MonoBehaviour
 
     public void Die()
     {
-
         GameManager.gm.ChangeScore(myData.scoreValue);
-        Destroy(gameObject);
-  
+        if (movement != null && attackScript != null) InitializeEntity();
+        gameObject.SetActive(false);
     }
 }

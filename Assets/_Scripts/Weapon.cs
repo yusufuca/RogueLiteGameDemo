@@ -16,10 +16,6 @@ public class Weapon : MonoBehaviour
         weaponCollider = GetComponent<BoxCollider>();
         parentTag = parent.tag;    
     }
-    void Update()
-    {
-                
-    }
     private void OnTriggerEnter(Collider other)
     {
         if (!damageGiven)

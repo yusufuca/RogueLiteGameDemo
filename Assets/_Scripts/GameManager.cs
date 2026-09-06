@@ -5,17 +5,12 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager gm;
-
+    public GameObject Player;
     public event Action<int> OnScoreChanged;
-
-
     [SerializeField] private TextMeshProUGUI scoreText;
-   
     public Transform patrolArea;
     public float patrolAreaLength = 10f;
     public float patrolAreaDepth = 10f;
-
-    public GameObject player;
     public GameObject goblin;
     public bool isDebugTextOpen = true;
 
@@ -24,7 +19,7 @@ public class GameManager : MonoBehaviour
     {
         gm = this;
         currentScore = 0;
-        scoreText.text = currentScore.ToString();
+        scoreText.text = "SCORE: " + currentScore.ToString();
     }
 
     void Update()
@@ -39,7 +34,7 @@ public class GameManager : MonoBehaviour
         currentScore += score;
         if (scoreText != null)
         {
-            scoreText.text = currentScore.ToString();
+            scoreText.text = "SCORE: " + currentScore.ToString();
         }
     }
 }

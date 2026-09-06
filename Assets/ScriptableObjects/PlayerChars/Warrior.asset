@@ -24,10 +24,11 @@ MonoBehaviour:
     dashMultiplier: 1.5
     weight: 120
   healthStats:
-    HP: 100
-    maxHealth: 100
+    HP: 10000
+    maxHealth: 10000
   attackStats:
     damage: 10
-    attackSpeed: 2
+    attackSpeed: 1
+    attackRange: 0
   scoreValue: 0
   prefab: {fileID: 5072796300454438740, guid: 400ae728cd9321e4bbb16ea4a7a91a4d, type: 3}

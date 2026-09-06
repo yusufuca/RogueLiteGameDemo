@@ -17,8 +17,8 @@ public class StatPanelManager : MonoBehaviour
     private Dictionary<StatTypes, TextMeshProUGUI> statTextMap = new Dictionary<StatTypes, TextMeshProUGUI>();
     private void Awake()
     {
-        statManager = FindAnyObjectByType<StatManager>();
-        movement = FindAnyObjectByType<Movement>();
+        statManager = GameManager.gm.Player.GetComponent<StatManager>();
+        movement = GameManager.gm.Player.GetComponent<Movement>();
         foreach (var binding in statBindings)
         {
             if (binding.UIText != null && !statTextMap.ContainsKey(binding.statType))

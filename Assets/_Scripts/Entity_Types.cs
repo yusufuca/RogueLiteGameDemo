@@ -23,6 +23,7 @@ public class Entity_Types : ScriptableObject
     {
         public float damage;
         public float attackSpeed;
+        public float attackRange;
     }
     [System.Serializable]
     public struct MovementStats

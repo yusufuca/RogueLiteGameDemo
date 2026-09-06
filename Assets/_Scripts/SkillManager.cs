@@ -8,41 +8,33 @@ public class SkillManager : MonoBehaviour
 {
     public List<Skills> mySkills = new List<Skills>();
     public List<Skills> castedSkills = new List<Skills>();
-    
-    Skills lastCastSkill;
+    [SerializeField] private InputReader inputReader;
+    [SerializeField] private string myTag;
+    private string playerTag = "Player";
     Animator animator;
     StatManager myStatManagerScript;
-    float skillValue;
     public GameObject coolDownIcon;
     public GameObject durationBar;
     public UI_Manager UI_Manager;
+    private Attack attackScript;
+    private void Awake()
+    {
+        attackScript = GetComponent<Attack>();
+        myTag = gameObject.tag;
+    }
+
     private void Start()
     {
         animator = GetComponentInChildren<Animator>();
         myStatManagerScript = GetComponent<StatManager>();
         UI_Manager = FindAnyObjectByType<UI_Manager>();
     }
-    public void Update()
-    {
-       
-        if (Input.GetKeyDown(KeyCode.Q)) 
-        {
-            CastSkill(mySkills[0]);
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            CastSkill(mySkills[1]);
-        }
-    }
+
     public void CastSkill(Skills skill)
     {
-
         if (!castedSkills.Contains(skill))
         {
             Debug.Log("Skill Casting");
-            int skillIndex = 0;
-       
-
             float duration = skill.duration;
             string skillString = skill.animTriggerString;
             //Animate Skill
@@ -72,6 +64,7 @@ public class SkillManager : MonoBehaviour
     private IEnumerator ContinousSkillRoutine(Skills skill)
     {
         animator.SetBool(skill.animTriggerString, true);
+        if(skill == mySkills[1]) attackScript.cast2Request = true;
         float timer = skill.duration;
         int skillIndex = 0;
         skillIndex = mySkills.IndexOf(skill);
@@ -79,11 +72,13 @@ public class SkillManager : MonoBehaviour
         while (timer > 0)
         {
             timer -= Time.deltaTime;
-            skillImage.fillAmount = Mathf.Clamp01(timer/skill.duration);
+            if(myTag == playerTag) skillImage.fillAmount = Mathf.Clamp01(timer/skill.duration);
+            attackScript.cast2Request = true;
             yield return null;
         }
-        skillImage.fillAmount = 0;
+        if (myTag == playerTag) skillImage.fillAmount = 0;
         animator.SetBool(skill.animTriggerString, false);
+        attackScript.cast2Request = false;
     }
     private IEnumerator CoolDownRoutine(Skills skill)
     {
@@ -96,12 +91,12 @@ public class SkillManager : MonoBehaviour
         {
             
             timer -= Time.deltaTime;
-            
-          skillImage.fillAmount = Mathf.Clamp01(timer / skill.coolDown);
+
+            if (myTag == playerTag) skillImage.fillAmount = Mathf.Clamp01(timer / skill.coolDown);
             yield return null;
         }
 
-        skillImage.fillAmount = 0;
+        if (myTag == playerTag) skillImage.fillAmount = 0;
        
         RemoveTheSkillBuff(skill);
         castedSkills.Remove(skill);
@@ -125,11 +120,12 @@ public class SkillManager : MonoBehaviour
         while (timer > 0)
         {
             if (!castedSkills.Contains(skill)) break;
+            if(skill == mySkills[1]) attackScript.cast2Request = false;
             timer -= Time.deltaTime;
-            denyImage.enabled = true;
+            if (myTag == playerTag) denyImage.enabled = true;
             yield return null;
         }
-        denyImage.enabled = false;
+        if (myTag == playerTag) denyImage.enabled = false;
 
     }
     private void CalculateValue(Skills skill)

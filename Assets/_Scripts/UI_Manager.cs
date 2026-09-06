@@ -14,11 +14,8 @@ public class UI_Manager : MonoBehaviour
     public Image staminaBar;
     public GameObject player;
     [SerializeField] private StatManager statManager;
-    public GameObject Container;
     public GameObject perkTree;
     public GameObject statPanel;
-    
-
     // skills
     public List<GameObject> skillContainer = new List<GameObject>();
   
@@ -26,10 +23,9 @@ public class UI_Manager : MonoBehaviour
     CanvasGroup perkTreeGroup;
     private void Awake()
     {
-        player = GameObject.Find("Player");
-        if (player != null)  statManager = player.GetComponent<StatManager>();
+        player = GameManager.gm.Player;
+        statManager = player.GetComponent<StatManager>();
 
-        
     }
 
     private void OnEnable()

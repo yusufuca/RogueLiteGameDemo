@@ -1,50 +1,54 @@
 using System;
+using System.Collections;
 using System.Reflection.Metadata;
 using TMPro;
 using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-
+    public event Action OnDashing;
     public event Action<float> OnMoveSpeedChanged;
-
-
     [Header("-----References-----")]
-    public Entity_Types myData;
-    [SerializeField] protected StatManager statManager;
-    [SerializeField] protected GameManager gm;
-    [SerializeField] protected Attack attackScript;
-    [SerializeField] protected CharacterController charController;
-    [SerializeField] protected Animator animator;
-    [SerializeField] protected TextMeshPro debugText;
-
+    [SerializeField] public InputReader inputReader;
+    public StatManager statManager;
+    [SerializeField] public GameManager gm;
+    [SerializeField] public Attack attackScript;
+    [SerializeField] public CharacterController charController;
+    public Animator animator;
+    [SerializeField] public TextMeshPro debugText;
+    public BaseMovementState currentMovementState;
 
 
 
     [Header("-----Movement AI-----")]
-    [SerializeField, Range(300f,1000f)] protected float acceleration = 500f;
-    [SerializeField] protected Vector3 playerVelocity;
-    [SerializeField] protected float movementVelocity;
-    [SerializeField] protected float currentSpeed = 0;
-    [SerializeField] protected Vector3 targetPos;
-    [SerializeField] protected float gravityValue = -9.8f;
-    [SerializeField] protected bool isGrounded;
-    [SerializeField] public bool isMoving;
-    [SerializeField] protected bool isSprinting;
-    [SerializeField] protected Vector3 lastPos;
-    [SerializeField] protected Vector3 moveDirection;
-    [SerializeField] protected bool isDashing;
+    [SerializeField, Range(300f,1000f)] public float acceleration = 500f;
+    public Vector3 playerVelocity;
+    [SerializeField] public float movementVelocity;
+    [SerializeField] public float currentSpeed = 0;
+    [SerializeField] public float dashDuration;
+    [SerializeField] public Vector3 targetPos;
+    public float gravityValue = -9.8f;
+    public bool isGrounded;
+    public bool isMoving;
+    public bool jumpRequest;
+    public bool dashRequest;
+    public bool sprintRequest;
+    [SerializeField] public bool isSprinting;
+    [SerializeField] public Vector3 lastPos;
+    [SerializeField] public Vector3 moveDirection;
+    public bool isDashing;
 
     private void Awake()
     {
-      
-        debugText = gameObject.GetComponentInChildren<TextMeshPro>();
+        if(debugText == null) debugText = gameObject.GetComponentInChildren<TextMeshPro>();
     }
 
     protected virtual void Start()
     {
 
-      
+        currentMovementState = new IdleState();
+        currentMovementState.EnterState(this);
+
         targetPos = transform.position;
         gm = GameManager.gm;
         statManager = GetComponent<StatManager>();
@@ -56,108 +60,60 @@ public class Movement : MonoBehaviour
 
     protected virtual void Update()
     {
-        isSprinting = Input.GetKey(KeyCode.LeftShift);
-        statManager.Sprint(isSprinting);
-        if (attackScript.isStunned) return;
-        if (gm.isDebugTextOpen && debugText != null)
-        {
-            
-            //debugText.text = ("Speed: " + Speed);
-        }
+        currentMovementState.UpdateState(this);
         isGrounded = charController.isGrounded;
-        
-        if (isGrounded)
-        {
-            if(playerVelocity.y < -2)
-            {
-                playerVelocity.y = -2f;
-            } 
-        }
-
-        playerVelocity.y += gravityValue * Time.deltaTime;
-        CalculateMoveDirection();
-        MoveToPoisiton();
-       
-        AnimateChar();
+        ApplyGravity();
         lastPos = transform.position;
         animator.SetBool("isGrounded", isGrounded);
         animator.SetFloat("VerticalVelocity", playerVelocity.y);
     }
-    protected virtual void CalculateMoveDirection()
+   
+    public void StateChanger(BaseMovementState newState)
     {
-        Vector3 horizantalTargetPos = new Vector3(targetPos.x,0,targetPos.z);
-        Vector3 horizantalPos = new Vector3(transform.position.x,0,transform.position.z);
+        currentMovementState.ExitState(this);
+        currentMovementState = newState;
+        currentMovementState.EnterState(this);
+    }
+    protected virtual void ApplyGravity()
+    {
+        if (isGrounded)
+        {
+            if (playerVelocity.y < -2)
+            {
+                playerVelocity.y = -2f;
+            }
+        }
+        playerVelocity.y += gravityValue * Time.deltaTime;
+    }
+    public virtual void CalculateMoveDirection()
+    {
+        if (attackScript.canTurnMousePos && attackScript.isAttacking) return;
+        Vector3 horizantalTargetPos = new Vector3(targetPos.x, 0, targetPos.z);
+        Vector3 horizantalPos = new Vector3(transform.position.x, 0, transform.position.z);
         float distance = Vector3.Distance(horizantalPos, horizantalTargetPos);
-        if (distance > 0.5f) 
+        if (distance > 0.5f)
         {
             Vector3 direction = (targetPos - transform.position).normalized;
             direction.y = 0;
             moveDirection = direction;
         }
-        else 
+        else
         {
             moveDirection = Vector3.zero;
         }
     }
-    protected virtual void MoveToPoisiton()
+    public IEnumerator DashRoutine()
     {
-        float targetSpeed = statManager.Speed;
-        if (currentSpeed != statManager.Speed && moveDirection != Vector3.zero)
-        {
-            if (isSprinting && !statManager.isExhausted)
-            {
-                currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed * statManager.myData.movementStats.runMultiplier
-                    , ref movementVelocity, statManager.myData.movementStats.weight / acceleration);
-            }
-            else if (isDashing)
-            {
-                currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed * statManager.myData.movementStats.dashMultiplier
-                    , ref movementVelocity, statManager.myData.movementStats.weight / acceleration);
-                OnMoveSpeedChanged?.Invoke(currentSpeed);
-
-            }
-            else
-            {
-                currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed ,ref movementVelocity, statManager.myData.movementStats.weight / acceleration);
-            }
-                animator.SetFloat("MoveSpeed", currentSpeed);
-                OnMoveSpeedChanged?.Invoke(currentSpeed);
-        }
-        else
-        {
-            movementVelocity = 0;
-            currentSpeed = 0;
-            OnMoveSpeedChanged?.Invoke(currentSpeed);
-        }
-
-
-            Vector3 finalDestination = Vector3.zero;
-        if (moveDirection != Vector3.zero)
-        {
-            Vector3 lookDirection = new Vector3(moveDirection.x, 0, moveDirection.z);
-            if (lookDirection != Vector3.zero)
-            {
-                transform.forward = lookDirection;
-            }
-        }
-
-        finalDestination = moveDirection * currentSpeed;
-        finalDestination.y = playerVelocity.y;  
-
-        charController.Move(finalDestination * Time.deltaTime);
-        
+        isDashing = true;
+        OnDashing?.Invoke();
+        animator.SetTrigger("Dash");
+        animator.SetBool("isDashing", isDashing);
+        yield return new WaitForSeconds(dashDuration);
+        isDashing = false;
+        animator.SetBool("isDashing", isDashing);
     }
-    protected virtual void AnimateChar()
+    public void NotifySpeedChange(float speed)
     {
-        if (isGrounded && moveDirection != Vector3.zero) 
-        {
-            isMoving = true;
-            animator.SetBool("isMoving" , true);
-        }
-        else
-        {
-            isMoving = false;
-            animator.SetBool("isMoving", false);
-        }
+        OnMoveSpeedChanged?.Invoke(speed);
     }
 }

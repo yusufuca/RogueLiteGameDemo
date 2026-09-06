@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -10,30 +9,13 @@ public class PerkTreeManager : MonoBehaviour
     [SerializeField]private StatManager StatManager;
     [SerializeField] public GameObject descriptionTextGameObject;
     [SerializeField] public TextMeshProUGUI descriptionText;
-
     public List<Perk_SO> playerPerks = new List<Perk_SO>();
     public event Action <Perk_SO> OnPerkAdded;
 
 
     private void Awake()
     {
-        StatManager = GameObject.Find("Player").GetComponent<StatManager>();
-    }
-    void Start()
-    {
-        
-        
-    }
-
-    void Update()
-    {
-        MapHandler();
-    }
-    private void MapHandler()
-    {
-       
-       
-
+        StatManager = GameManager.gm.Player.GetComponent<StatManager>();
     }
     public bool TryToAddPerk(Perk_SO perk,Image img)
     {
@@ -54,17 +36,10 @@ public class PerkTreeManager : MonoBehaviour
             return true;
         }
         else
-        {
-            
+        {    
             img.color = Color.red;
             Debug.Log("Not Enough Coin");
             return false;
         }
-
-    }
-    private void AddPerk(Perk_SO perk)
-    {
-        
-       
     }
 }
