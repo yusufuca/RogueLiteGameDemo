@@ -27,7 +27,7 @@ public class SkillManager : MonoBehaviour
     {
         animator = GetComponentInChildren<Animator>();
         myStatManagerScript = GetComponent<StatManager>();
-        UI_Manager = FindAnyObjectByType<UI_Manager>();
+        UI_Manager = GameManager.gm.uI_Manager;
     }
 
     public void CastSkill(Skills skill)

@@ -14,7 +14,7 @@ public class PerkSetup : MonoBehaviour, IPointerDownHandler , IPointerExitHandle
 
     private void Awake()
     {
-        perkTreeManager = FindAnyObjectByType<PerkTreeManager>();
+        perkTreeManager = GameManager.gm.perkTreeManager;
     }
     public void OnPointerDown(PointerEventData eventData)
     {

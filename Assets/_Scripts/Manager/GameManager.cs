@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager gm;
     public GameObject Player;
+    public PerkTreeManager perkTreeManager;
+    public UI_Manager uI_Manager;
     public event Action<int> OnScoreChanged;
     [SerializeField] private TextMeshProUGUI scoreText;
     public Transform patrolArea;

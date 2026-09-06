@@ -425,6 +425,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   Player: {fileID: 244063451}
+  perkTreeManager: {fileID: 1650452677}
+  uI_Manager: {fileID: 755586763}
   scoreText: {fileID: 1111908915}
   patrolArea: {fileID: 534165997}
   patrolAreaLength: 30

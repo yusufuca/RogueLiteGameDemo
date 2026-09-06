@@ -53,7 +53,7 @@ public class StatManager : MonoBehaviour
     public int currentCoin;
     private void Awake()
     {
-        perkTreeManager = FindFirstObjectByType<PerkTreeManager>();
+        perkTreeManager = GameManager.gm.perkTreeManager;
         movement = GetComponent<Movement>();
         attackScript = GetComponent<Attack>();
 
