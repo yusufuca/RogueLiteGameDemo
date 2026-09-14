@@ -1,3 +1,5 @@
+# Roguelite Demo — Gameplay Architecture & Combat Systems
+
 This project explores game feel and extensible architecture. Along the way I applied SOLID principles, state machines, data-driven design, the observer pattern, and interfaces — aiming for weighty, fluid combat that holds its pace.
 
 Movement and combat run on two concurrent state machines rather than one, since an entity can  only occupy a single state within either machine at a time. New states derive from a shared base class, keeping the two systems independent unless explicit interaction is needed — a sprint speed penalty during an attack, for example.
